@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>3D WebGL Hollow Object</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div id="controls">
+        <input type="file" id="model-file" accept=".txt" onchange="loadModelFromFile(this.files)">
+        <br>
+        <br>
+        <h2>Controls</h2>
+        <label for="projection-select">Projection Type:</label>
+        <select id="projection-select">
+            <option value="orthographic">Orthographic</option>
+            <option value="oblique">Oblique</option>
+            <option value="perspective">Perspective</option>
+        </select>
+        <br>
+        <label for="rotation-x">Rotation X:</label>
+        <input type="range" min="0" max="360" step="1" value="0" id="rotation-x">
+        <label for="rotation-y">Rotation Y:</label>
+        <input type="range" min="0" max="360" step="1" value="0" id="rotation-y">
+        <label for="rotation-z">Rotation Z:</label>
+        <input type="range" min="0" max="360" step="1" value="0" id="rotation-z">
+        <label for="scale-slider">Scale:</label>
+        <input type="range" min="0" max="10" step="0.1" value="1" id="scale-slider">
+        <label for="translation-x">Translation X:</label>
+        <input type="range" min="-10" max="10" step="0.1" value="0" id="translation-x">
+        <label for="translation-y">Translation Y:</label>
+        <input type="range" min="-10" max="10" step="0.1" value="0" id="translation-y">
+        <label for="translation-z">Translation Z:</label>
+        <input type="range" min="-10" max="10" step="0.1" value="0" id="translation-z">
+        <h3>Camera</h3>
+        <label for="camera-radius">Radius:</label>
+        <input type="range" min="5" max="50" step="0.5" value="10" id="camera-radius">
+        <label for="camera-horizontal-rotation">Horizontal Rotation:</label>
+        <input type="range" min="-180" max="180" step="1" value="0" id="camera-horizontal-rotation">
+        <label for="camera-vertical-rotation">Vertical Rotation:</label>
+        <input type="range" min="-90" max="90" step="1" value="0" id="camera-vertical-rotation">
+        <label for="camera-translation-x">Translation X:</label>
+        <input type="range" min="-10" max="10" value="0" step="0.1" id="camera-translation-x">
+        <label for="camera-translation-y">Translation Y:</label>
+        <input type="range" min="-10" max="10" value="0" step="0.1" id="camera-translation-y">
+        <label for="camera-translation-z">Translation Z:</label>
+        <input type="range" min="-10" max="10" value="0" step="0.1" id="camera-translation-z">
+        <br>
+        <button id="reset-btn">Reset View</button>
+        <button id="help-btn">Help</button>
+        <br>
+        <label for="shading-checkbox">Shading:</label>
+        <input type="checkbox" id="shading-checkbox">
+    </div>
+
+    <script src="math.js"></script>
+    <script src="main.js"></script>
+    <script src="help.js"></script>
+</body>
+
+</html>
