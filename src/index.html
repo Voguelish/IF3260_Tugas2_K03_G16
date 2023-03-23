@@ -6,10 +6,104 @@
     <title>3D WebGL Hollow Object</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<body >
+    <div class="flex">
+      <!-- <div class="leftPane">
+        <p>Selected shape: <span id="selectedShape"></span></p>
+        <p>Selected point: <span id="selectedPoint"></span></p>
+        <button id="clearButton">Clear Selection</button>
+        <p>Shapes:</p>
+        <ol id="shapeList">
+        </ol>
+      </div> -->
+      <canvas id="canvas">
+      Browser Anda tidak mendukung elemen Canvas HTML5
+      </canvas>
+      <div class="rightPane">
+        <div>
+          <div class="flex">
+            <h2>Shapes</h2>
+          </div>
+          <div>Hint :
+            <p id="hint"></p> 
+          </div>
+          <div id="button-container">
+            <button class="btn btn-default" id="square">Create Cube</button>
+            <button  class="btn btn-default" id="line">Create A</button>
+            <button class="btn btn-default" id="rectangle">Create B</button>
+          </div>
+          <div class="flex">
+            <div id="button-container">
+            <h2>Resize Shape</h2>
+            <p>Size: <input id="size" type="number" min="0" max="2" step=".01"value="0.1"/></p>
+            <button class="btn btn-default" id="changeLength">Change Length Line</button>
+          </div>
+          </div>
+        </div>
+        <h2>Shape tool</h2>
+        <div id="shapeToolContainer" class="toolContainer">
+          <div id="dilatasi" class="tool">
+            <h3>Dilatasi</h3>
+            <p>Multiplier: <input id="multiplier" type="number" min="0" max="100" value="50"/> %</p>
+            <button class="btn btn-default" id="dilatasiMinus">-</button>
+            <button class="btn btn-default" id="dilatasiPlus">+</button>
+          </div>
+          <div id="translasi" class="tool">
+            <h3>Translasi</h3>
+            <div id="translasiButtonContainer" class="translateButtonContainer">
+              <div></div>
+              <button class="btn btn-default " id="translasiUp">↑</button>
+              <div></div>
+              <button class="btn btn-default" id="translasiLeft">←</button>
+              <button class="btn btn-default" id="translasiDown">↓</button>
+              <button class="btn btn-default" id="translasiRight">→</button>
+            </div>
+          </div>
+          <div id="shapeColor" class="tool">
+            <h3>Ganti warna bangun</h3>
+            <input type="color" id="shapeColorPicker"/>
+          </div>
+          <div id="" class="tool">
+            <h3>Hapus bangun</h3>
+            <button class="btn btn-danger" id="hapusShape">Hapus</button>
+          </div>
+        </div>
+        <h2>Point tool</h2>
+        <div id="pointToolContainer" class="toolContainer">
+          <div id="gesertTitik" class="tool">
+            <h3>Geser titik</h3>
+            <div id="geserTitikButtonContainer" class="translateButtonContainer">
+              <div></div>
+              <button class="btn btn-default " id="geserTitikUp">↑</button>
+              <div></div>
+              <button class="btn btn-default" id="geserTitikLeft">←</button>
+              <button class="btn btn-default" id="geserTitikDown">↓</button>
+              <button class="btn btn-default" id="geserTitikRight">→</button>
+            </div>
+          </div>
+          <div id="shapeColor" class="tool">
+            <h3>Ganti warna titik</h3>
+            <input type="color" id="pointColorPicker"/>
+          </div>
+        </div>
+        <div id="pointToolContainer" class="toolContainer">
+          <div id="gesertTitik" class="tool">
+            <h3>Save</h3>
+            <div id="geserTitikButtonContainer" class="translateButtonContainer">
+              <button class="btn btn-default" id="save">Save</button>
+            </div>
+          </div>
+          <div id="gesertTitik" class="tool">
+            <h3>Load</h3>
+            <div id="geserTitikButtonContainer" class="translateButtonContainer">
+              <input accept=".json,application/json" type="file" class="btn btn-default" id="load"></input>
+            </div>
+          </div>
 
-<body>
+        </div>
+      </div>
+<!-- <body style="background-color: rgb(196, 255, 196);">
     <canvas id="canvas"></canvas>
-
     <div id="controls">
         <input type="file" id="model-file" accept=".txt" onchange="loadModelFromFile(this.files)">
         <br>
@@ -20,6 +114,14 @@
             <option value="orthographic">Orthographic</option>
             <option value="oblique">Oblique</option>
             <option value="perspective">Perspective</option>
+        </select>
+        <br>
+        <label >Shape Type:</label>
+
+        <select id="shape-list">
+            <option value="cube">Shape Tepen</option>
+            <option value="oblique">Shape Daffa</option>
+            <option value="perspective">Shape Adzka</option>
         </select>
         <br>
         <label for="rotation-x">Rotation X:</label>
@@ -51,15 +153,15 @@
         <input type="range" min="-10" max="10" value="0" step="0.1" id="camera-translation-z">
         <br>
         <button id="reset-btn">Reset View</button>
-        <button id="help-btn">Help</button>
+        <button id="help-btn">Help</button>     
         <br>
         <label for="shading-checkbox">Shading:</label>
         <input type="checkbox" id="shading-checkbox">
-    </div>
-
+    </div> -->
     <script src="math.js"></script>
-    <script src="main.js"></script>
+    <script src="maintepen.js"></script>
     <script src="help.js"></script>
+    <script src="../hollowobj/cube.js"></script>
 </body>
 
 </html>

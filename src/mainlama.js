@@ -1,8 +1,6 @@
 const canvas = document.getElementById('canvas');
 const gl = canvas.getContext('webgl');
 
-const aPositionLocation = gl.getAttribLocation(program, 'a_position');
-const aColorLocation = gl.getAttribLocation(program, 'a_color');
 
 // Load model from txt file
 function loadModelFromFile(file) {
@@ -179,9 +177,12 @@ if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
 
 // Create shader program
 const program = gl.createProgram();
+const aPositionLocation = gl.getAttribLocation(program, 'a_position');
+const aColorLocation = gl.getAttribLocation(program, 'a_color');
 gl.attachShader(program, vertexShader);
 gl.attachShader(program, fragmentShader);
 gl.linkProgram(program);
+
 if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
   console.error('Failed to link program:', gl.getProgramInfoLog(program));
 }
