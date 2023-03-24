@@ -102,6 +102,9 @@ var _Pmatrix;
 var _Vmatrix;
 var _Mmatrix;
 var _Nmatrix;
+
+// OBJECTS
+
 var pyramid = [
   //bottom face
   -0.2, -0.2, 0.2, -0.18, -0.2, 0.2, -0.18, -0.2, -0.2, -0.2, -0.2, -0.2,
@@ -188,9 +191,102 @@ var colors = [
   1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1,
 
 ];
-for (var i = 0; i < 12 * 4 * 4; i++) {
-  vertices.push(pyramid[i]);
-}
+
+var hollowCube = [
+  // Front face
+  // v0-v1-v2-v3
+  -0.3, -0.3, 0.3,
+  0.3, -0.3, 0.3,
+  0.3, 0.3, 0.3,
+  -0.3, 0.3, 0.3,
+
+  // Back face
+  // v4-v5-v6-v7
+  -0.3, -0.3, -0.3,
+  0.3, -0.3, -0.3,
+  0.3, 0.3, -0.3,
+  -0.3, 0.3, -0.3,
+
+  // Top face
+  // v3-v2-v6-v7
+  -0.3, 0.3, 0.3,
+  0.3, 0.3, 0.3,
+  0.3, 0.3, -0.3,
+  -0.3, 0.3, -0.3,
+
+  // Bottom face
+  // v0-v1-v5-v4
+  -0.3, -0.3, 0.3,
+  0.3, -0.3, 0.3,
+  0.3, -0.3, -0.3,
+  -0.3, -0.3, -0.3,
+
+]
+
+var hollowCubeVertexNormals = [
+  // Front face
+  // v0-v1-v2-v3
+  0, 0, 1,
+  0, 0, 1,
+  0, 0, 1,
+  0, 0, 1,
+
+  // Back face
+  // v4-v5-v6-v7
+  0, 0, -1,
+  0, 0, -1,
+  0, 0, -1,
+  0, 0, -1,
+
+  // Top face
+  // v3-v2-v6-v7
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+
+  // Bottom face
+  // v0-v1-v5-v4
+  0, -1, 0,
+  0, -1, 0,
+  0, -1, 0,
+  0, -1, 0,
+];
+
+var hollowCubeColors = [
+  // Front face
+  // v0-v1-v2-v3
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+
+  // Back face
+  // v4-v5-v6-v7
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+
+
+  // Top face
+  // v3-v2-v6-v7
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+
+
+  // Bottom face
+  // v0-v1-v5-v4
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+];
+
+//
+
 const canvas = document.getElementById("canvas");
 const gl = check(canvas);
 var oldAngle = 0;
@@ -247,6 +343,24 @@ function setup() {
 var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1];
 // draw object
 function draw(proj_matrix, model_matrix, start, end) {
+
+  const fov = 45 * Math.PI / 180;
+  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  const near = 0.1;
+  const far = 1000.0;
+
+  const projectionType = document.getElementById('projection').value;
+
+  if (projectionType === "perspective"){
+    perspective(proj_matrix, fov, aspect, near, far);
+  } else if (projectionType === "orthographic"){
+    orthographic(proj_matrix,-aspect, aspect, -1.0, 1.0, near, far);
+    // TODO: update cam distance
+  } else if (projectionType === "oblique"){
+    perspective(proj_matrix, fov, aspect, near, far);
+    // TODO: implement oblique, masih pake perpective, update cam distance
+  }
+
   gl.uniformMatrix4fv(_Pmatrix, false, proj_matrix);
   gl.uniformMatrix4fv(_Vmatrix, false, view_matrix);
   gl.uniformMatrix4fv(_Mmatrix, false, model_matrix);
@@ -267,6 +381,11 @@ function setUpInitScene() {
   document.getElementById('angle').value = oldAngle;
   var proj_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
   var model_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+  for (var i = 0; i < 12 * 4 * 4; i++) {
+    vertices.push(pyramid[i]);
+  }
+
   objects.push({
     "name": "pyramid",
     "offset": 0,
@@ -288,8 +407,7 @@ function setUpInitScene() {
   oldAngle = 0;
   document.getElementById('angle').value = oldAngle;
 }
-setup();
-setUpInitScene();
+
 function yRotate(angleInRadians) {
   return [
     Math.cos(angleInRadians), 0, Math.sin(angleInRadians), 0,
@@ -298,27 +416,145 @@ function yRotate(angleInRadians) {
     0, 0, 0, 1,
   ];
 }
+
+function multiply(a, b) {
+  const result = [];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      let sum = 0;
+      for (let k = 0; k < 4; k++) {
+        sum += a[i * 4 + k] * b[k * 4 + j];
+      }
+      result[i * 4 + j] = sum;
+    }
+  }
+  return result;
+}
+
 function updateAngleY() {
   let value = document.getElementById('angle').value;
   value = value * Math.PI / 180;
   let move = value - oldAngle;
-  let product = [];
-  for (var i = 0; i < 4; i++) {
-    for (var j = 0; j < 4; j++) {
-      let sum = 0;
-      for (var k = 0; k < 4; k++)
-        sum = sum + yRotate(move)[i * 4 + k] * view_matrix[k * 4 + j];
-      product[i * 4 + j] = sum;
-    }
-  }
-  view_matrix = product;
-  // view_matrix = multiply(yRotate(move), view_matrix);
+
+  view_matrix = multiply(yRotate(move), view_matrix);
+
   setup();
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
   oldAngle = value;
 }
+
+const transpose = (out, a) => {
+  // Self-tranpose
+  if (out === a) {
+    let a01 = a[1];
+    let a02 = a[2];
+    let a03 = a[3];
+    let a12 = a[6];
+    let a13 = a[7];
+    let a23 = a[11];
+
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a01;
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a02;
+    out[9] = a12;
+    out[11] = a[14];
+    out[12] = a03;
+    out[13] = a13;
+    out[14] = a23;
+
+  } else {
+    out[0] = a[0];
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a[1];
+    out[5] = a[5];
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a[2];
+    out[9] = a[6];
+    out[10] = a[10];
+    out[11] = a[14];
+    out[12] = a[3];
+    out[13] = a[7];
+    out[14] = a[11];
+    out[15] = a[15];
+  }
+  
+  return out;
+}
+
+const perspective = (out, fovy, aspect, near, far) => {
+  let f = 1.0/Math.tan(fovy/2);
+
+  out[0] = f/aspect;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = f;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[11] = -1;
+  out[12] = 0;
+  out[13] = 0;
+  out[15] = 0;
+
+  if (far != null && far !== Infinity) {
+    out[10] = (far + near) / (near - far);
+    out[14] = 2 * far * near / (near - far);
+  } else {
+    out[10] = -1;
+    out[14] = -2 * near;
+  }
+  return out;
+}
+
+const orthographic = (out, left, right, bottom, top, near, far) => {
+  let l_r = 1/(left - right);
+  let b_t = 1/(bottom - top);
+  let n_f = 1/(near - far);
+
+  out[0] = -2 * l_r;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = -2 * b_t;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 2 * n_f;
+  out[11] = 0;
+  out[12] = (left + right) * l_r;
+  out[13] = (top + bottom) * b_t;
+  out[14] = (far + near) * n_f;
+  out[15] = 1;
+
+  return out;
+}
+
+const oblique = (out, theta, phi) => {
+  // TODO: Implement
+}
+
+function projectionHandler() {
+  setup();
+  for (var i = 0; i < objects.length; i++) {
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+  }
+
+}
+
 function getCenterPoint(start, end, arr){
   let maxX = -Infinity;
   let minX = Infinity;
@@ -417,3 +653,7 @@ buttons.forEach(button => {
       });    }
   });
 });
+
+
+setup();
+setUpInitScene();
