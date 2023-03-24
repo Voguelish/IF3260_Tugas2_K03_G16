@@ -21,14 +21,14 @@
         <div class="flex">
           <h2>3D Objects</h2>
         </div>
-        <div   id="button-container">
+        <div id="button-container">
           <button value="pyramid"class="btn btn-default" id="pyramid"> Pyramid Tepen</button>
           <button value= "adzka" class="btn btn-default" id="shape-a"> A</button>
           <button value= "daffa" class="btn btn-default" id="shape-b"> B</button>
         </div>
         <br>
         Projection Type:
-          <select id="projection">
+          <select id="projection" onchange="projectionHandler()">
             <option value="perspective" selected="selected">Perspective</option>
             <option value="orthographic">Orthographic</option>
             <option value="oblique">Oblique</option>
@@ -67,7 +67,7 @@
           <input type="range" id="angle" min="-360" max="360" step="1" oninput="updateAngleY()">
           <br>
           <label for="distance">Distance</label>
-          <input type="range" id="distance" min="1" max="100" step="1" oninput="updateAngleY()">
+          <input type="range" id="distance" min="-6" max="0" value="-1.3" step="0.01" oninput="distanceHandler()">
           <br>
         </div>
       </div>
@@ -93,9 +93,7 @@
 
     </div>
   </div>
-  <script src="math.js"></script>
   <script src="main.js"></script>
-  <script src="help.js"></script>
 </body>
 
 </html>

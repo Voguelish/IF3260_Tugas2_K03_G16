@@ -1,6 +1,9 @@
 var vertices = [];
 var oldAngle = 0;
 var objects = [];
+var anglex = 180;
+var angley = 180;
+var anglez = 180;
 function check(canvas) {
   let gl = ['experimental-webgl', 'webgl', 'moz-webgl'];
   let flag;
@@ -101,6 +104,9 @@ var _Pmatrix;
 var _Vmatrix;
 var _Mmatrix;
 var _Nmatrix;
+
+// OBJECTS
+
 var pyramid = [
   //bottom face
   -0.2, -0.2, 0.2, -0.18, -0.2, 0.2, -0.18, -0.2, -0.2, -0.2, -0.2, -0.2,
@@ -187,9 +193,102 @@ var colors = [
   1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1,
 
 ];
-for (var i = 0; i < 12 * 4 * 4; i++) {
-  vertices.push(pyramid[i]);
-}
+
+var hollowCube = [
+  // Front face
+  // v0-v1-v2-v3
+  -0.3, -0.3, 0.3,
+  0.3, -0.3, 0.3,
+  0.3, 0.3, 0.3,
+  -0.3, 0.3, 0.3,
+
+  // Back face
+  // v4-v5-v6-v7
+  -0.3, -0.3, -0.3,
+  0.3, -0.3, -0.3,
+  0.3, 0.3, -0.3,
+  -0.3, 0.3, -0.3,
+
+  // Top face
+  // v3-v2-v6-v7
+  -0.3, 0.3, 0.3,
+  0.3, 0.3, 0.3,
+  0.3, 0.3, -0.3,
+  -0.3, 0.3, -0.3,
+
+  // Bottom face
+  // v0-v1-v5-v4
+  -0.3, -0.3, 0.3,
+  0.3, -0.3, 0.3,
+  0.3, -0.3, -0.3,
+  -0.3, -0.3, -0.3,
+
+]
+
+var hollowCubeVertexNormals = [
+  // Front face
+  // v0-v1-v2-v3
+  0, 0, 1,
+  0, 0, 1,
+  0, 0, 1,
+  0, 0, 1,
+
+  // Back face
+  // v4-v5-v6-v7
+  0, 0, -1,
+  0, 0, -1,
+  0, 0, -1,
+  0, 0, -1,
+
+  // Top face
+  // v3-v2-v6-v7
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+
+  // Bottom face
+  // v0-v1-v5-v4
+  0, -1, 0,
+  0, -1, 0,
+  0, -1, 0,
+  0, -1, 0,
+];
+
+var hollowCubeColors = [
+  // Front face
+  // v0-v1-v2-v3
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+
+  // Back face
+  // v4-v5-v6-v7
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+  1, 0, 0,
+
+
+  // Top face
+  // v3-v2-v6-v7
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+
+
+  // Bottom face
+  // v0-v1-v5-v4
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+  0, 1, 0,
+];
+
+//
+
 const canvas = document.getElementById("canvas");
 const gl = check(canvas);
 var oldAngle = 0;
@@ -243,9 +342,26 @@ function setup() {
   gl.viewport(0.0, 0.0, canvas.width, canvas.height);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
-var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1];
+var distance = document.getElementById("distance").value;
+var camera_height = 0.05
+var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -camera_height, distance, 1];
 // draw object
 function draw(proj_matrix, model_matrix, start, end) {
+  const fov = 70 * Math.PI / 180;
+  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  const near = 0;
+  const far = 10;
+
+  const projectionType = document.getElementById('projection').value;
+
+  if (projectionType === "perspective") {
+    perspective(proj_matrix, fov, aspect, near, far);
+  } else if (projectionType === "orthographic") {
+    orthographic(proj_matrix, -aspect, aspect, -1.0, 1.0, near, far);
+  } else if (projectionType === "oblique") {
+    oblique(proj_matrix, 75, 80);
+  }
+
   setup();
   gl.uniformMatrix4fv(_Pmatrix, false, proj_matrix);
   gl.uniformMatrix4fv(_Vmatrix, false, view_matrix);
@@ -267,6 +383,11 @@ function setUpInitScene() {
   document.getElementById('angle').value = oldAngle;
   var proj_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
   var model_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+
+  for (var i = 0; i < 12 * 4 * 4; i++) {
+    vertices.push(pyramid[i]);
+  }
+
   objects.push({
     "name": "pyramid",
     "offset": 0,
@@ -288,8 +409,7 @@ function setUpInitScene() {
   oldAngle = 0;
   document.getElementById('angle').value = oldAngle;
 }
-setup();
-setUpInitScene();
+
 function yRotate(angleInRadians) {
   return [
     Math.cos(angleInRadians), 0, Math.sin(angleInRadians), 0,
@@ -298,6 +418,21 @@ function yRotate(angleInRadians) {
     0, 0, 0, 1,
   ];
 }
+
+function multiply(a, b) {
+  const result = [];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      let sum = 0;
+      for (let k = 0; k < 4; k++) {
+        sum += a[i * 4 + k] * b[k * 4 + j];
+      }
+      result[i * 4 + j] = sum;
+    }
+  }
+  return result;
+}
+
 function updateAngleY() {
   let value = document.getElementById('angle').value;
   value = value * Math.PI / 180;
@@ -318,12 +453,178 @@ function updateAngleY() {
   }
   oldAngle = value;
 }
-function getCenterPoint(start, end, arr){
+
+const transpose = (out, a) => {
+  // Self-tranpose
+  if (out === a) {
+    let a01 = a[1];
+    let a02 = a[2];
+    let a03 = a[3];
+    let a12 = a[6];
+    let a13 = a[7];
+    let a23 = a[11];
+
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a01;
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a02;
+    out[9] = a12;
+    out[11] = a[14];
+    out[12] = a03;
+    out[13] = a13;
+    out[14] = a23;
+
+  } else {
+    out[0] = a[0];
+    out[1] = a[4];
+    out[2] = a[8];
+    out[3] = a[12];
+    out[4] = a[1];
+    out[5] = a[5];
+    out[6] = a[9];
+    out[7] = a[13];
+    out[8] = a[2];
+    out[9] = a[6];
+    out[10] = a[10];
+    out[11] = a[14];
+    out[12] = a[3];
+    out[13] = a[7];
+    out[14] = a[11];
+    out[15] = a[15];
+  }
+
+  return out;
+}
+
+const perspective = (out, fovy, aspect, near, far) => {
+  let f = 1.0 / Math.tan(fovy / 2);
+
+  out[0] = f / aspect;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = f;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[11] = -1;
+  out[12] = 0;
+  out[13] = 0;
+  out[15] = 0;
+
+  if (far != null && far !== Infinity) {
+    out[10] = (far + near) / (near - far);
+    out[14] = 2 * far * near / (near - far);
+  } else {
+    out[10] = -1;
+    out[14] = -2 * near;
+  }
+  return out;
+}
+
+const orthographic = (out, left, right, bottom, top, near, far) => {
+  let l_r = 1 / (left - right);
+  let b_t = 1 / (bottom - top);
+  let n_f = 1 / (near - far);
+
+  out[0] = -2 * l_r;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = -2 * b_t;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 2 * n_f;
+  out[11] = 0;
+  out[12] = (left + right) * l_r;
+  out[13] = (top + bottom) * b_t;
+  out[14] = (far + near) * n_f;
+  out[15] = 1;
+
+  return out;
+}
+
+const oblique = (out, theta, phi) => {
+  var t = theta * Math.PI / 180;
+  var p = phi * Math.PI / 180;
+  var cotT = -1 / Math.tan(t);
+  var cotP = -1 / Math.tan(p);
+
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = cotT;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 1;
+  out[6] = cotP;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 1;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+
+  transpose(out, out);
+
+  return out;
+}
+
+function projectionHandler() {
+  projectionType = document.getElementById("projection").value;
+  if (projectionType == "orthographic") {
+    distance = -1.3;
+    view_matrix[14] = distance;
+  } else if (projectionType == "oblique") {
+    distance = 0;
+    view_matrix[14] = distance;
+  } else {
+    distance = -1.3;
+    view_matrix[14] = distance;
+  }
+  setup();
+  for (var i = 0; i < objects.length; i++) {
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+  }
+
+}
+
+function distanceHandler() {
+  projectionType = document.getElementById("projection").value;
+  if (projectionType == "perspective") {
+    distance = document.getElementById("distance").value;
+    view_matrix[14] = distance;
+    setup();
+    for (var i = 0; i < objects.length; i++) {
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+    }
+  }
+}
+
+function resetHandler() {
+  document.getElementById("projection").value = "perspective";
+  document.getElementById("distance").value = -1.3;
+  document.getElementById("angle").value = 0;
+  projectionHandler();
+  updateAngleY();
+}
+
+function getCenterPoint(start, end, arr) {
   let maxX = -Infinity;
   let minX = Infinity;
   let maxY = -Infinity;
   let minY = Infinity;
-  
+
   for (let i = start; i < end; i += 3) {
     maxX = Math.max(maxX, arr[i]);
     minX = Math.min(minX, arr[i]);
@@ -335,54 +636,22 @@ function getCenterPoint(start, end, arr){
   const centerY = (maxY + minY) / 2;
   return [centerX, centerY];
 }
-function translation(tx, ty, tz){
+function translation(tx, ty, tz) {
   return [
-      1,  0,  0,  0,
-      0,  1,  0,  0,
-      0,  0,  1,  0,
-      tx, ty, tz, 1,
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    tx, ty, tz, 1,
   ];
 }
 
-function scale(sx, sy, sz){
+function scale(sx, sy, sz) {
   return [
-    sx, 0,  0,  0,
-    0, sy,  0,  0,
-    0,  0, sz,  0,
-    0,  0,  0,  1,
+    sx, 0, 0, 0,
+    0, sy, 0, 0,
+    0, 0, sz, 0,
+    0, 0, 0, 1,
   ];
-}
-function updateTranslate(obj,axis, value){
-  var idx=0;
-  for (var i = 0; i <objects.length; i++){
-    if(objects[i].name == obj){
-        idx = i;
-        break;
-    }
-  }
-  if(axis == 'x'){
-      var model_matrix = translation(value, 0, 0);  
-  }
-  else{
-    console.log("masuk y");
-      var model_matrix = translation(0, value, 0);
-  }
-
-  let currentModelMatrix = objects[idx].modelMatrix;
-  for (var i = 0; i < 4; i++) {
-      for (var j = 0; j < 4; j++) {
-          let sum = 0;
-          for (var k = 0; k < 4; k++)
-              sum = sum + currentModelMatrix[i * 4 + k] * model_matrix[k * 4 + j];
-              objects[idx].modelMatrix[i * 4 + j] = sum;
-      }
-  }
-  for(var i = 0; i<objects.length; i++){
-    console.log(objects[i].offset);
-    console.log(objects[i].modelMatrix.length);
-    console.log(objects[i].projMatrix.length);
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
-  }
 }
 function updateScale(obj,value){
   var idx=0;
@@ -392,45 +661,44 @@ function updateScale(obj,value){
         break;
     }
   }
-  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  let centerPoint = getCenterPoint(objects[idx].offset * 12, objects[idx].offset * 12 + objects[idx].numVertices * 3, vertices);
   var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
   var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
   var scale_matrix = scale(value, value, value);
-  const product=[];
-  for (var i = 0; i < 4; i++) {
-      for (var j = 0; j < 4; j++) {
-          let sum = 0;
-          for (var k = 0; k < 4; k++)
-              sum = sum + scale_matrix[i * 4 + k] * translate_matrix2[k * 4 + j];
-          product[i * 4 + j] = sum;
-      }
-  }
-  const model_matrix=[];
+  const product = [];
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 4; j++) {
-        let sum2 = 0;
-        for (var k = 0; k < 4; k++)
-            sum2 = sum2 + translate_matrix1[i * 4 + k] * product[k * 4 + j];
-        model_matrix[i * 4 + j] = sum2;
+      let sum = 0;
+      for (var k = 0; k < 4; k++)
+        sum = sum + scale_matrix[i * 4 + k] * translate_matrix2[k * 4 + j];
+      product[i * 4 + j] = sum;
+    }
+  }
+  const model_matrix = [];
+  for (var i = 0; i < 4; i++) {
+    for (var j = 0; j < 4; j++) {
+      let sum2 = 0;
+      for (var k = 0; k < 4; k++)
+        sum2 = sum2 + translate_matrix1[i * 4 + k] * product[k * 4 + j];
+      model_matrix[i * 4 + j] = sum2;
     }
   }
   const currentModelMatrix = objects[idx].modelMatrix;
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 4; j++) {
-        let sum3 = 0;
-        for (var k = 0; k < 4; k++)
-            sum3 = sum3 + model_matrix[i * 4 + k] * currentModelMatrix[k * 4 + j];
-            objects[idx].modelMatrix[i * 4 + j] = sum3;
+      let sum3 = 0;
+      for (var k = 0; k < 4; k++)
+        sum3 = sum3 + model_matrix[i * 4 + k] * currentModelMatrix[k * 4 + j];
+      objects[idx].modelMatrix[i * 4 + j] = sum3;
     }
   }
-
   for(var i = 0; i<objects.length; i++){
-    console.log(objects[i].offset.length);
-    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
   }
 }
+
 const buttons = document.querySelectorAll('#button-container button');
-let activeButtonValues="";
+let activeButtonValues = "";
 buttons.forEach(button => {
   button.addEventListener('click', () => {
     buttons.forEach(otherButton => {
@@ -441,74 +709,12 @@ buttons.forEach(button => {
     console.log(activeButtonValue);
     activeButtonValues = activeButtonValue;    
     if(activeButtonValues==="pyramid"){
-      console.log(activeButtonValues==="pyramid");    
-      const xTranslation= document.getElementById('translation-x');
-      const yTranslation= document.getElementById('translation-y');
-      const zTranslation= document.getElementById('translation-z');
-      xTranslation.addEventListener('change',(e)=>{
-        e.preventDefault();
-        console.log("pppyramid");
-
-        const xValue= xTranslation.value;
-        console.log(xValue);
-        updateTranslate(activeButtonValues,'x',xValue);
-
-      });
-      yTranslation.addEventListener('change',(e)=>{
-        e.preventDefault();
-        console.log("pppyramid");
-
-        const yValue= yTranslation.value;
-        console.log(yValue);
-        updateTranslate(activeButtonValues,'y',yValue);
-      });
-
-      zTranslation.addEventListener('change',(e)=>{
-        e.preventDefault();
-        console.log("pppyramid");
-
-        const zValue= zTranslation.value;
-        console.log(zValue);
-        updateTranslate(activeButtonValues,'z',zValue);
-
-      });
-
+      console.log(activeButtonValues==="pyramid");
       const scaleInput = document.getElementById('scale');
-      scaleInput.addEventListener("input", (e) => {
-        e.preventDefault();
+      scaleInput.addEventListener('change', () => {
         const scaleValue = scaleInput.value;
-        updateScale(activeButtonValues,scaleValue)
-      });  
-    }
+        console.log(scaleValue);
+        updateScale(activeButtonValue,scaleValue)
+      });    }
   });
 });
-
-function save() {
-  const object = JSON.stringify(objects, null, 4);
-  const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(object)}`;
-  const downloadLink = document.createElement('a');
-  downloadLink.setAttribute('href', dataUri);
-  downloadLink.setAttribute('download', 'model.json');
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
-  document.body.removeChild(downloadLink);
-}
-
-// function load() {
-//   const inputFile = document.getElementById('load');
-//   const file = inputFile.files[0];
-//   if (!file) {
-//     return;
-//   }
-//   const reader = new FileReader();
-//   reader.onload = function(event) {
-//     const contents = event.target.result;
-//     const objects= JSON.parse(contents); 
-//     document.getElementById('angle').value = 0;
-//     for(var j = 0; j<objects.length; i++){
-//         draw(objects[j].projMatrix, objects[j].modelMatrix, objects[j].offset, objects[j].end);
-//     }
-    
-//   };
-//   reader.readAsText(file);
-// }
