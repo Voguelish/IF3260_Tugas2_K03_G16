@@ -50,3 +50,7 @@
 .center{
   margin: 0 auto;
 }
+.btn.active {
+  background-color: blue;
+  color: white;
+}

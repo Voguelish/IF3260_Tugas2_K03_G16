@@ -274,12 +274,15 @@ function setUpInitScene() {
     "numVertices": 64,
     "vertices": vertices,
     "color": colors,
-    "normals": vertexNormals.slice(96 * 3, 96 * 3 + 64 * 3),
+    "normals": vertexNormals,
     "projMatrix": proj_matrix,
     "modelMatrix": model_matrix
   });
+  console.log(objects[0].projMatrix.length);
+  console.log(objects[0].normals.length);
+  console.log(objects[0].modelMatrix.length);
+
   for (var i = 0; i < objects.length; i++) {
-    console.log(objects[i].vertices);
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
   oldAngle = 0;
@@ -314,6 +317,103 @@ function updateAngleY() {
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
-
   oldAngle = value;
 }
+function getCenterPoint(start, end, arr){
+  let maxX = -Infinity;
+  let minX = Infinity;
+  let maxY = -Infinity;
+  let minY = Infinity;
+  
+  for (let i = start; i < end; i += 3) {
+    maxX = Math.max(maxX, arr[i]);
+    minX = Math.min(minX, arr[i]);
+    maxY = Math.max(maxY, arr[i + 1]);
+    minY = Math.min(minY, arr[i + 1]);
+  }
+
+  const centerX = (maxX + minX) / 2;
+  const centerY = (maxY + minY) / 2;
+  return [centerX, centerY];
+}
+function translation(tx, ty, tz){
+  return [
+      1,  0,  0,  0,
+      0,  1,  0,  0,
+      0,  0,  1,  0,
+      tx, ty, tz, 1,
+  ];
+}
+
+function scale(sx, sy, sz){
+  return [
+    sx, 0,  0,  0,
+    0, sy,  0,  0,
+    0,  0, sz,  0,
+    0,  0,  0,  1,
+  ];
+}
+function updateScale(obj,value){
+  var idx=0;
+  for (var i = 0; i <objects.length; i++){
+    if(objects[i].name == obj){
+        idx = i;
+        break;
+    }
+  }
+  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
+  var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
+  var scale_matrix = scale(value, value, value);
+  const product=[];
+  for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 4; j++) {
+          let sum = 0;
+          for (var k = 0; k < 4; k++)
+              sum = sum + scale_matrix[i * 4 + k] * translate_matrix2[k * 4 + j];
+          product[i * 4 + j] = sum;
+      }
+  }
+  const model_matrix=[];
+  for (var i = 0; i < 4; i++) {
+    for (var j = 0; j < 4; j++) {
+        let sum2 = 0;
+        for (var k = 0; k < 4; k++)
+            sum2 = sum2 + translate_matrix1[i * 4 + k] * product[k * 4 + j];
+        model_matrix[i * 4 + j] = sum2;
+    }
+  }
+  const currentModelMatrix = objects[idx].modelMatrix;
+  for (var i = 0; i < 4; i++) {
+    for (var j = 0; j < 4; j++) {
+        let sum3 = 0;
+        for (var k = 0; k < 4; k++)
+            sum3 = sum3 + model_matrix[i * 4 + k] * currentModelMatrix[k * 4 + j];
+            objects[idx].modelMatrix[i * 4 + j] = sum3;
+    }
+  }
+  for(var i = 0; i<objects.length; i++){
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  }
+}
+const buttons = document.querySelectorAll('#button-container button');
+let activeButtonValues="";
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    buttons.forEach(otherButton => {
+      otherButton.classList.remove('active');
+    });
+    button.classList.add('active');
+    const activeButtonValue = document.querySelector('#button-container button.active').value;
+    console.log(activeButtonValue);
+    activeButtonValues = activeButtonValue;    
+    if(activeButtonValues==="pyramid"){
+      console.log(activeButtonValues==="pyramid");
+      const scaleInput = document.getElementById('scale');
+      scaleInput.addEventListener('change', () => {
+        const scaleValue = scaleInput.value;
+        console.log(scaleValue);
+        updateScale(activeButtonValue,scaleValue)
+      });    }
+  });
+});
