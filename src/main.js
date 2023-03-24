@@ -1,9 +1,9 @@
 var vertices = [];
 var oldAngle = 0;
 var objects = [];
-var anglex= 180;
-var angley= 180;
-var anglez= 180;
+var anglex = 180;
+var angley = 180;
+var anglez = 180;
 function check(canvas) {
   let gl = ['experimental-webgl', 'webgl', 'moz-webgl'];
   let flag;
@@ -343,25 +343,25 @@ function setup() {
   gl.viewport(0.0, 0.0, canvas.width, canvas.height);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
-var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1];
+var distance = document.getElementById("distance").value;
+var camera_height = 0.05
+var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -camera_height, distance, 1];
 // draw object
 function draw(proj_matrix, model_matrix, start, end) {
 
-  const fov = 45 * Math.PI / 180;
+  const fov = 70 * Math.PI / 180;
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-  const near = 0.1;
-  const far = 1000.0;
+  const near = 0;
+  const far = 10;
 
   const projectionType = document.getElementById('projection').value;
 
-  if (projectionType === "perspective"){
+  if (projectionType === "perspective") {
     perspective(proj_matrix, fov, aspect, near, far);
-  } else if (projectionType === "orthographic"){
-    orthographic(proj_matrix,-aspect, aspect, -1.0, 1.0, near, far);
-    // TODO: update cam distance
-  } else if (projectionType === "oblique"){
-    perspective(proj_matrix, fov, aspect, near, far);
-    // TODO: implement oblique, masih pake perpective, update cam distance
+  } else if (projectionType === "orthographic") {
+    orthographic(proj_matrix, -aspect, aspect, -1.0, 1.0, near, far);
+  } else if (projectionType === "oblique") {
+    oblique(proj_matrix, 75, 80);
   }
 
   gl.uniformMatrix4fv(_Pmatrix, false, proj_matrix);
@@ -489,14 +489,14 @@ const transpose = (out, a) => {
     out[14] = a[11];
     out[15] = a[15];
   }
-  
+
   return out;
 }
 
 const perspective = (out, fovy, aspect, near, far) => {
-  let f = 1.0/Math.tan(fovy/2);
+  let f = 1.0 / Math.tan(fovy / 2);
 
-  out[0] = f/aspect;
+  out[0] = f / aspect;
   out[1] = 0;
   out[2] = 0;
   out[3] = 0;
@@ -522,9 +522,9 @@ const perspective = (out, fovy, aspect, near, far) => {
 }
 
 const orthographic = (out, left, right, bottom, top, near, far) => {
-  let l_r = 1/(left - right);
-  let b_t = 1/(bottom - top);
-  let n_f = 1/(near - far);
+  let l_r = 1 / (left - right);
+  let b_t = 1 / (bottom - top);
+  let n_f = 1 / (near - far);
 
   out[0] = -2 * l_r;
   out[1] = 0;
@@ -547,10 +547,45 @@ const orthographic = (out, left, right, bottom, top, near, far) => {
 }
 
 const oblique = (out, theta, phi) => {
-  // TODO: Implement
+  var t = theta * Math.PI / 180;
+  var p = phi * Math.PI / 180;
+  var cotT = -1 / Math.tan(t);
+  var cotP = -1 / Math.tan(p);
+
+  out[0] = 1;
+  out[1] = 0;
+  out[2] = cotT;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 1;
+  out[6] = cotP;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = 1;
+  out[11] = 0;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
+  out[15] = 1;
+
+  transpose(out, out);
+
+  return out;
 }
 
 function projectionHandler() {
+  projectionType = document.getElementById("projection").value;
+  if (projectionType == "orthographic") {
+    distance = -1.3;
+    view_matrix[14] = distance;
+  } else if (projectionType == "oblique") {
+    distance = 0;
+    view_matrix[14] = distance;
+  } else {
+    distance = -1.3;
+    view_matrix[14] = distance;
+  }
   setup();
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
@@ -558,12 +593,32 @@ function projectionHandler() {
 
 }
 
-function getCenterPoint(start, end, arr){
+function distanceHandler() {
+  projectionType = document.getElementById("projection").value;
+  if (projectionType == "perspective") {
+    distance = document.getElementById("distance").value;
+    view_matrix[14] = distance;
+    setup();
+    for (var i = 0; i < objects.length; i++) {
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+    }
+  }
+}
+
+function resetHandler() {
+  document.getElementById("projection").value = "perspective";
+  document.getElementById("distance").value = -1.3;
+  document.getElementById("angle").value = 0;
+  projectionHandler();
+  updateAngleY();
+}
+
+function getCenterPoint(start, end, arr) {
   let maxX = -Infinity;
   let minX = Infinity;
   let maxY = -Infinity;
   let minY = Infinity;
-  
+
   for (let i = start; i < end; i += 3) {
     maxX = Math.max(maxX, arr[i]);
     minX = Math.min(minX, arr[i]);
@@ -575,91 +630,91 @@ function getCenterPoint(start, end, arr){
   const centerY = (maxY + minY) / 2;
   return [centerX, centerY];
 }
-function translation(tx, ty, tz){
+function translation(tx, ty, tz) {
   return [
-      1,  0,  0,  0,
-      0,  1,  0,  0,
-      0,  0,  1,  0,
-      tx, ty, tz, 1,
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    tx, ty, tz, 1,
   ];
 }
 
-function scale(sx, sy, sz){
+function scale(sx, sy, sz) {
   return [
-    sx, 0,  0,  0,
-    0, sy,  0,  0,
-    0,  0, sz,  0,
-    0,  0,  0,  1,
+    sx, 0, 0, 0,
+    0, sy, 0, 0,
+    0, 0, sz, 0,
+    0, 0, 0, 1,
   ];
 }
-function updateScale(obj,value){
-  var idx=0;
-  for (var i = 0; i <objects.length; i++){
-    if(objects[i].name == obj){
-        idx = i;
-        break;
+function updateScale(obj, value) {
+  var idx = 0;
+  for (var i = 0; i < objects.length; i++) {
+    if (objects[i].name == obj) {
+      idx = i;
+      break;
     }
   }
-  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  let centerPoint = getCenterPoint(objects[idx].offset * 12, objects[idx].offset * 12 + objects[idx].numVertices * 3, vertices);
   var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
   var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
   var scale_matrix = scale(value, value, value);
-  const product=[];
-  for (var i = 0; i < 4; i++) {
-      for (var j = 0; j < 4; j++) {
-          let sum = 0;
-          for (var k = 0; k < 4; k++)
-              sum = sum + scale_matrix[i * 4 + k] * translate_matrix2[k * 4 + j];
-          product[i * 4 + j] = sum;
-      }
-  }
-  const model_matrix=[];
+  const product = [];
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 4; j++) {
-        let sum2 = 0;
-        for (var k = 0; k < 4; k++)
-            sum2 = sum2 + translate_matrix1[i * 4 + k] * product[k * 4 + j];
-        model_matrix[i * 4 + j] = sum2;
+      let sum = 0;
+      for (var k = 0; k < 4; k++)
+        sum = sum + scale_matrix[i * 4 + k] * translate_matrix2[k * 4 + j];
+      product[i * 4 + j] = sum;
+    }
+  }
+  const model_matrix = [];
+  for (var i = 0; i < 4; i++) {
+    for (var j = 0; j < 4; j++) {
+      let sum2 = 0;
+      for (var k = 0; k < 4; k++)
+        sum2 = sum2 + translate_matrix1[i * 4 + k] * product[k * 4 + j];
+      model_matrix[i * 4 + j] = sum2;
     }
   }
   const currentModelMatrix = objects[idx].modelMatrix;
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 4; j++) {
-        let sum3 = 0;
-        for (var k = 0; k < 4; k++)
-            sum3 = sum3 + model_matrix[i * 4 + k] * currentModelMatrix[k * 4 + j];
-            objects[idx].modelMatrix[i * 4 + j] = sum3;
+      let sum3 = 0;
+      for (var k = 0; k < 4; k++)
+        sum3 = sum3 + model_matrix[i * 4 + k] * currentModelMatrix[k * 4 + j];
+      objects[idx].modelMatrix[i * 4 + j] = sum3;
     }
   }
-  for(var i = 0; i<objects.length; i++){
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  for (var i = 0; i < objects.length; i++) {
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
 }
 
 function rotateX(rad) {
   return [
-      1, 0, 0, 0,
-      0, Math.cos(rad), -Math.sin(rad), 0,
-      0, Math.sin(rad), Math.cos(rad), 0,
-      0, 0, 0, 1
+    1, 0, 0, 0,
+    0, Math.cos(rad), -Math.sin(rad), 0,
+    0, Math.sin(rad), Math.cos(rad), 0,
+    0, 0, 0, 1
   ];
 }
 
 function rotateY(rad) {
   return [
-      Math.cos(rad), 0, Math.sin(rad), 0,
-      0, 1, 0, 0,
-      -Math.sin(rad), 0, Math.cos(rad), 0,
-      0, 0, 0, 1
+    Math.cos(rad), 0, Math.sin(rad), 0,
+    0, 1, 0, 0,
+    -Math.sin(rad), 0, Math.cos(rad), 0,
+    0, 0, 0, 1
   ]
 }
 
 function rotateZ(rad) {
   return [
-      Math.cos(rad), -Math.sin(rad), 0, 0,
-      Math.sin(rad), Math.cos(rad), 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
+    Math.cos(rad), -Math.sin(rad), 0, 0,
+    Math.sin(rad), Math.cos(rad), 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
   ]
 }
 
@@ -681,28 +736,28 @@ function rotationMatrix(x, y, z) {
 }
 
 function updateRotation(obj, x, y, z) {
-  var idx=0;
-  for (var i = 0; i <objects.length; i++){
-    if(objects[i].name == obj){
-        idx = i;
-        break;
+  var idx = 0;
+  for (var i = 0; i < objects.length; i++) {
+    if (objects[i].name == obj) {
+      idx = i;
+      break;
     }
   }
-  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  let centerPoint = getCenterPoint(objects[idx].offset * 12, objects[idx].offset * 12 + objects[idx].numVertices * 3, vertices);
   var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
   var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
   var rotation_matrix = rotationMatrix(x, y, z);
-  
+
   var trans = multiply(translate_matrix1, multiply(rotation_matrix, translate_matrix2));
   objects[idx].modelMatrix = multiply(trans, objects[idx].modelMatrix)
 
-  for(var i = 0; i<objects.length; i++){
-    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  for (var i = 0; i < objects.length; i++) {
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
 }
 
 const buttons = document.querySelectorAll('#button-container button');
-let activeButtonValues="";
+let activeButtonValues = "";
 buttons.forEach(button => {
   button.addEventListener('click', () => {
     buttons.forEach(otherButton => {
@@ -711,9 +766,9 @@ buttons.forEach(button => {
     button.classList.add('active');
     const activeButtonValue = document.querySelector('#button-container button.active').value;
     console.log(activeButtonValue);
-    activeButtonValues = activeButtonValue;    
-    if(activeButtonValues==="pyramid"){
-      console.log(activeButtonValues==="pyramid");
+    activeButtonValues = activeButtonValue;
+    if (activeButtonValues === "pyramid") {
+      console.log(activeButtonValues === "pyramid");
       const scaleInput = document.getElementById('scale');
       const rotXInput = document.getElementById('rotation-x');
       const rotYInput = document.getElementById('rotation-y');
@@ -721,23 +776,23 @@ buttons.forEach(button => {
       scaleInput.addEventListener('input', () => {
         const scaleValue = scaleInput.value;
         console.log(scaleValue);
-        updateScale(activeButtonValue,scaleValue)
-      });    
+        updateScale(activeButtonValue, scaleValue)
+      });
       rotXInput.addEventListener('input', () => {
         const rotxValue = rotXInput.value;
-        const deltarotx =  rotxValue - anglex;
+        const deltarotx = rotxValue - anglex;
         anglex = rotxValue;
         updateRotation(activeButtonValue, deltarotx, 0, 0)
       })
       rotYInput.addEventListener('input', () => {
         const rotyValue = rotYInput.value;
-        const deltaroty =  rotyValue - angley;
+        const deltaroty = rotyValue - angley;
         angley = rotyValue;
         updateRotation(activeButtonValue, 0, deltaroty, 0)
       })
       rotZInput.addEventListener('input', () => {
         const rotzValue = rotZInput.value;
-        const deltarotz =  rotzValue - anglez;
+        const deltarotz = rotzValue - anglez;
         anglez = rotzValue;
         updateRotation(activeButtonValue, 0, 0, deltarotz)
       })
