@@ -1,6 +1,9 @@
 var vertices = [];
 var oldAngle = 0;
 var objects = [];
+var anglex= 180;
+var angley= 180;
+var anglez= 180;
 function check(canvas) {
   let gl = ['experimental-webgl', 'webgl', 'moz-webgl'];
   let flag;
@@ -632,6 +635,72 @@ function updateScale(obj,value){
       draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
   }
 }
+
+function rotateX(rad) {
+  return [
+      1, 0, 0, 0,
+      0, Math.cos(rad), -Math.sin(rad), 0,
+      0, Math.sin(rad), Math.cos(rad), 0,
+      0, 0, 0, 1
+  ];
+}
+
+function rotateY(rad) {
+  return [
+      Math.cos(rad), 0, Math.sin(rad), 0,
+      0, 1, 0, 0,
+      -Math.sin(rad), 0, Math.cos(rad), 0,
+      0, 0, 0, 1
+  ]
+}
+
+function rotateZ(rad) {
+  return [
+      Math.cos(rad), -Math.sin(rad), 0, 0,
+      Math.sin(rad), Math.cos(rad), 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+  ]
+}
+
+function rotationMatrix(x, y, z) {
+  // x : deg, y : deg, z : deg
+
+  // get radian value
+  x *= Math.PI / 180;
+  y *= Math.PI / 180;
+  z *= Math.PI / 180;
+
+  // get rotation matrix
+  var matx = rotateX(x);
+  var maty = rotateY(y);
+  var matz = rotateZ(z);
+
+  // 
+  return multiply(matx, multiply(maty, matz));
+}
+
+function updateRotation(obj, x, y, z) {
+  var idx=0;
+  for (var i = 0; i <objects.length; i++){
+    if(objects[i].name == obj){
+        idx = i;
+        break;
+    }
+  }
+  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
+  var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
+  var rotation_matrix = rotationMatrix(x, y, z);
+  
+  var trans = multiply(translate_matrix1, multiply(rotation_matrix, translate_matrix2));
+  objects[idx].modelMatrix = multiply(trans, objects[idx].modelMatrix)
+
+  for(var i = 0; i<objects.length; i++){
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  }
+}
+
 const buttons = document.querySelectorAll('#button-container button');
 let activeButtonValues="";
 buttons.forEach(button => {
@@ -646,11 +715,33 @@ buttons.forEach(button => {
     if(activeButtonValues==="pyramid"){
       console.log(activeButtonValues==="pyramid");
       const scaleInput = document.getElementById('scale');
-      scaleInput.addEventListener('change', () => {
+      const rotXInput = document.getElementById('rotation-x');
+      const rotYInput = document.getElementById('rotation-y');
+      const rotZInput = document.getElementById('rotation-z')
+      scaleInput.addEventListener('input', () => {
         const scaleValue = scaleInput.value;
         console.log(scaleValue);
         updateScale(activeButtonValue,scaleValue)
-      });    }
+      });    
+      rotXInput.addEventListener('input', () => {
+        const rotxValue = rotXInput.value;
+        const deltarotx =  rotxValue - anglex;
+        anglex = rotxValue;
+        updateRotation(activeButtonValue, deltarotx, 0, 0)
+      })
+      rotYInput.addEventListener('input', () => {
+        const rotyValue = rotYInput.value;
+        const deltaroty =  rotyValue - angley;
+        angley = rotyValue;
+        updateRotation(activeButtonValue, 0, deltaroty, 0)
+      })
+      rotZInput.addEventListener('input', () => {
+        const rotzValue = rotZInput.value;
+        const deltarotz =  rotzValue - anglez;
+        anglez = rotzValue;
+        updateRotation(activeButtonValue, 0, 0, deltarotz)
+      })
+    }
   });
 });
 
