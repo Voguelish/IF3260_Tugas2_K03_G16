@@ -2,96 +2,100 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D WebGL Hollow Object</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D WebGL Hollow Object</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body style="background-color: rgb(196, 255, 196);" >
-    <div class="flex">
-      <div >
-        <canvas id="canvas">
-            Browser Anda tidak mendukung elemen Canvas HTML5
-            </canvas>      
+<body style="background-color: rgb(180, 180, 180);">
+  <div class="flex">
+    <div>
+      <canvas id="canvas">
+        Browser Anda tidak mendukung elemen Canvas HTML5
+      </canvas>
     </div>
-      <div class="rightPane">
-        <div>
-          <div class="flex">
-            <h2>Shapes</h2>
-          </div>
-          <div>Hint :
-            <p id="hint"></p> 
-          </div>
-          <div id="button-container">
-            <button class="btn btn-default" id="pyramid"> Pyramid Tepen</button>
-            <button  class="btn btn-default" id=""> A</button>
-            <button class="btn btn-default" id=""> B</button>
-          </div>
-          <div class="flex">
-            <div id="button-container">
-            <h2>Resize Shape</h2>
-            <p>Size: <input id="size" type="number" min="0" max="2" step=".01"value="0.1"/></p>
-            <button class="btn btn-default" id="changeLength">Change Length Line</button>
-          </div>
-          </div>
+    <div class="rightPane">
+      <div>
+        <div class="flex">
+          <h2>3D Objects</h2>
         </div>
-        <h2>Shape tool</h2>
-        <div id="shapeToolContainer" class="toolContainer">
-          <div id="dilatasi" class="tool">
-            <h3>Dilatasi</h3>
-            <p>Multiplier: <input id="multiplier" type="number" min="0" max="100" value="50"/> %</p>
-            <button class="btn btn-default" id="dilatasiMinus">-</button>
-            <button class="btn btn-default" id="dilatasiPlus">+</button>
-          </div>
-          <div id="translasi" class="tool">
-            <h3>Translasi</h3>
-            <div id="translasiButtonContainer" class="translateButtonContainer">
-              <div></div>
-              <button class="btn btn-default " id="translasiUp">↑</button>
-              <div></div>
-              <button class="btn btn-default" id="translasiLeft">←</button>
-              <button class="btn btn-default" id="translasiDown">↓</button>
-              <button class="btn btn-default" id="translasiRight">→</button>
-            </div>
-          </div>
-          <div id="shapeColor" class="tool">
-            <h3>Ganti warna bangun</h3>
-            <input type="color" id="shapeColorPicker"/>
-          </div>
-          <div id="" class="tool">
-            <h3>Hapus bangun</h3>
-            <button class="btn btn-danger" id="hapusShape">Hapus</button>
-          </div>
+        <div id="button-container">
+          <button class="btn btn-default" id="pyramid"> Pyramid Tepen</button>
+          <button class="btn btn-default" id="shape-a"> A</button>
+          <button class="btn btn-default" id="shape-b"> B</button>
         </div>
-        <h2>Camera tool</h2>
-        <div id="pointToolContainer" class="toolContainer">
-          <div>
-            <h3>Angle&nbsp;</h3>
-            <input type="range" id="angle" name="camera" min="-360" max="360" step="1" oninput="updateAngleY()"><br/>  
-          </div>
-        </div>
-        </div>
-        <div id="pointToolContainer" class="toolContainer">
-          <div id="gesertTitik" class="tool">
-            <h3>Save</h3>
-            <div id="geserTitikButtonContainer" class="translateButtonContainer">
-              <button class="btn btn-default" id="save">Save</button>
-            </div>
-          </div>
-          <div id="gesertTitik" class="tool">
-            <h3>Load</h3>
-            <div id="geserTitikButtonContainer" class="translateButtonContainer">
-              <input accept=".json,application/json" type="file" class="btn btn-default" id="load"></input>
-            </div>
-          </div>
-
+        <br>
+        Projection Type:
+          <select id="projection">
+            <option value="perspective" selected="selected">Perspective</option>
+            <option value="orthographic">Orthographic</option>
+            <option value="oblique">Oblique</option>
+          </select>
+      </div>
+      <h2>Object Setting</h2>
+      <div id="shapeToolContainer" class="toolContainer">
+        <div id="scaling" class="tool">
+          <label for="scale">Scale</label>
+          <input type="range" min="0.5" max="2" value="1" class="slider" id="scale" step="0.001">
+          <br>
+          <label for="translation-x">Translation x</label>
+          <input type="range" min="-500" max="500" value="0" class="slider" id="translation-x">
+          <br>
+          <label for="translation-y">Translation y</label>
+          <input type="range" min="-500" max="500" value="0" class="slider" id="translation-y">
+          <br>
+          <label for="translation-z">Translation z</label>
+          <input type="range" min="-500" max="500" value="0" class="slider" id="translation-z">
+          <br>
+          <label for="rotation-x">Rotation x</label>
+          <input type="range" min="0" max="360" value="180" class="slider" id="rotation-x">
+          <br>
+          <label for="rotation-y">Rotation y</label>
+          <input type="range" min="0" max="360" value="180" class="slider" id="rotation-y">
+          <br>
+          <label for="rotation-z">Rotation z</label>
+          <input type="range" min="0" max="360" value="180" class="slider" id="rotation-z">
+          <br>
         </div>
       </div>
-    <script src="math.js"></script>
-    <script src="main.js"></script>
-    <script src="help.js"></script>
+      <h2>Camera Setting</h2>
+      <div id="pointToolContainer" class="toolContainer">
+        <div>
+          <label for="angle">Angle</label>
+          <input type="range" id="angle" min="-360" max="360" step="1" oninput="updateAngleY()">
+          <br>
+          <label for="distance">Distance</label>
+          <input type="range" id="distance" min="1" max="100" step="1" oninput="updateAngleY()">
+          <br>
+        </div>
+      </div>
+      <br>
+      <div>
+        <button onclick="resetHandler()">Reset View</button>
+        <button onclick="">Help</button>
+      </div>
+    </div>
+    <div id="pointToolContainer" class="toolContainer">
+      <div id="gesertTitik" class="tool">
+        <h3>Save</h3>
+        <div id="geserTitikButtonContainer" class="translateButtonContainer">
+          <button class="btn btn-default" id="save">Save</button>
+        </div>
+      </div>
+      <div id="gesertTitik" class="tool">
+        <h3>Load</h3>
+        <div id="geserTitikButtonContainer" class="translateButtonContainer">
+          <input accept=".json,application/json" type="file" class="btn btn-default" id="load"></input>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script src="math.js"></script>
+  <script src="main.js"></script>
+  <script src="help.js"></script>
 </body>
 
 </html>
