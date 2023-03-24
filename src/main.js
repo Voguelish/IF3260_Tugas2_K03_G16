@@ -281,7 +281,7 @@ function setUpInitScene() {
   console.log(objects[0].projMatrix.length);
   console.log(objects[0].normals.length);
   console.log(objects[0].modelMatrix.length);
-
+  
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
@@ -352,6 +352,38 @@ function scale(sx, sy, sz){
     0,  0,  0,  1,
   ];
 }
+function updateTranslate(obj,axis, value){
+  var idx=0;
+  for (var i = 0; i <objects.length; i++){
+    if(objects[i].name == obj){
+        idx = i;
+        break;
+    }
+  }
+  if(axis == 'x'){
+      var model_matrix = translation(value, 0, 0);  
+  }
+  else{
+    console.log("masuk y");
+      var model_matrix = translation(0, value, 0);
+  }
+
+  let currentModelMatrix = objects[idx].modelMatrix;
+  for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 4; j++) {
+          let sum = 0;
+          for (var k = 0; k < 4; k++)
+              sum = sum + currentModelMatrix[i * 4 + k] * model_matrix[k * 4 + j];
+              objects[idx].modelMatrix[i * 4 + j] = sum;
+      }
+  }
+  for(var i = 0; i<objects.length; i++){
+    console.log(objects[i].offset);
+    console.log(objects[i].modelMatrix.length);
+    console.log(objects[i].projMatrix.length);
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  }
+}
 function updateScale(obj,value){
   var idx=0;
   for (var i = 0; i <objects.length; i++){
@@ -393,7 +425,8 @@ function updateScale(obj,value){
   }
 
   for(var i = 0; i<objects.length; i++){
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+    console.log(objects[i].offset.length);
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
   }
 }
 const buttons = document.querySelectorAll('#button-container button');
@@ -409,12 +442,73 @@ buttons.forEach(button => {
     activeButtonValues = activeButtonValue;    
     if(activeButtonValues==="pyramid"){
       console.log(activeButtonValues==="pyramid");    
+      const xTranslation= document.getElementById('translation-x');
+      const yTranslation= document.getElementById('translation-y');
+      const zTranslation= document.getElementById('translation-z');
+      xTranslation.addEventListener('change',(e)=>{
+        e.preventDefault();
+        console.log("pppyramid");
+
+        const xValue= xTranslation.value;
+        console.log(xValue);
+        updateTranslate(activeButtonValues,'x',xValue);
+
+      });
+      yTranslation.addEventListener('change',(e)=>{
+        e.preventDefault();
+        console.log("pppyramid");
+
+        const yValue= yTranslation.value;
+        console.log(yValue);
+        updateTranslate(activeButtonValues,'y',yValue);
+      });
+
+      zTranslation.addEventListener('change',(e)=>{
+        e.preventDefault();
+        console.log("pppyramid");
+
+        const zValue= zTranslation.value;
+        console.log(zValue);
+        updateTranslate(activeButtonValues,'z',zValue);
+
+      });
+
       const scaleInput = document.getElementById('scale');
-      scaleInput.addEventListener("change", (e) => {
+      scaleInput.addEventListener("input", (e) => {
         e.preventDefault();
         const scaleValue = scaleInput.value;
         updateScale(activeButtonValues,scaleValue)
       });  
-    }    
+    }
   });
 });
+
+function save() {
+  const object = JSON.stringify(objects, null, 4);
+  const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(object)}`;
+  const downloadLink = document.createElement('a');
+  downloadLink.setAttribute('href', dataUri);
+  downloadLink.setAttribute('download', 'model.json');
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+
+// function load() {
+//   const inputFile = document.getElementById('load');
+//   const file = inputFile.files[0];
+//   if (!file) {
+//     return;
+//   }
+//   const reader = new FileReader();
+//   reader.onload = function(event) {
+//     const contents = event.target.result;
+//     const objects= JSON.parse(contents); 
+//     document.getElementById('angle').value = 0;
+//     for(var j = 0; j<objects.length; i++){
+//         draw(objects[j].projMatrix, objects[j].modelMatrix, objects[j].offset, objects[j].end);
+//     }
+    
+//   };
+//   reader.readAsText(file);
+// }

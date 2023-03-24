@@ -41,13 +41,13 @@
           <input type="range" min="0.5" max="2" value="1" class="slider" id="scale" step="0.001">
           <br>
           <label for="translation-x">Translation x</label>
-          <input type="range" min="-500" max="500" value="0" class="slider" id="translation-x">
+          <input type="range" min="-1" max="1" value="0" class="slider" id="translation-x" step ="0.1">
           <br>
           <label for="translation-y">Translation y</label>
-          <input type="range" min="-500" max="500" value="0" class="slider" id="translation-y">
+          <input type="range" min="-1" max="1" value="0" step ="0.1" class="slider" id="translation-y">
           <br>
           <label for="translation-z">Translation z</label>
-          <input type="range" min="-500" max="500" value="0" class="slider" id="translation-z">
+          <input type="range" min="-1" max="1" value="0" step ="0.1" class="slider" id="translation-z">
           <br>
           <label for="rotation-x">Rotation x</label>
           <input type="range" min="0" max="360" value="180" class="slider" id="rotation-x">
@@ -81,13 +81,13 @@
       <div id="gesertTitik" class="tool">
         <h3>Save</h3>
         <div id="geserTitikButtonContainer" class="translateButtonContainer">
-          <button class="btn btn-default" id="save">Save</button>
+          <button class="btn btn-default" onclick="save()" id="save">Save</button>
         </div>
       </div>
       <div id="gesertTitik" class="tool">
         <h3>Load</h3>
         <div id="geserTitikButtonContainer" class="translateButtonContainer">
-          <input accept=".json,application/json" type="file" class="btn btn-default" id="load"></input>
+          <input accept=".json,application/json" onchange="load()" type="file" class="btn btn-default" id="load"></input>
         </div>
       </div>
 
