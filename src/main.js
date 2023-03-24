@@ -91,7 +91,6 @@ function setGeometry(gl, vertices) {
     new Float32Array(vertices),
     gl.STATIC_DRAW);
 }
-// Fill the buffer with colors for the 'F'.
 function setColors(gl, colors) {
   gl.bufferData(
     gl.ARRAY_BUFFER,
@@ -206,6 +205,7 @@ function setup() {
   var vertBuff = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertBuff);
   setGeometry(gl, pyramid);
+
   // Create and store data into color buffer
   var color_buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
@@ -225,7 +225,6 @@ function setup() {
   gl.vertexAttribPointer(_position, 3, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(_position);
 
-  // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = colorBuffer)
   gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
   var _color = gl.getAttribLocation(program, "color");
   gl.vertexAttribPointer(_color, 3, gl.FLOAT, false, 0, 0);
@@ -247,6 +246,7 @@ function setup() {
 var view_matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1];
 // draw object
 function draw(proj_matrix, model_matrix, start, end) {
+  setup();
   gl.uniformMatrix4fv(_Pmatrix, false, proj_matrix);
   gl.uniformMatrix4fv(_Vmatrix, false, view_matrix);
   gl.uniformMatrix4fv(_Mmatrix, false, model_matrix);
@@ -312,7 +312,6 @@ function updateAngleY() {
     }
   }
   view_matrix = product;
-  // view_matrix = multiply(yRotate(move), view_matrix);
   setup();
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
@@ -392,6 +391,7 @@ function updateScale(obj,value){
             objects[idx].modelMatrix[i * 4 + j] = sum3;
     }
   }
+
   for(var i = 0; i<objects.length; i++){
       draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
   }
@@ -408,12 +408,13 @@ buttons.forEach(button => {
     console.log(activeButtonValue);
     activeButtonValues = activeButtonValue;    
     if(activeButtonValues==="pyramid"){
-      console.log(activeButtonValues==="pyramid");
+      console.log(activeButtonValues==="pyramid");    
       const scaleInput = document.getElementById('scale');
-      scaleInput.addEventListener('change', () => {
+      scaleInput.addEventListener("change", (e) => {
+        e.preventDefault();
         const scaleValue = scaleInput.value;
-        console.log(scaleValue);
-        updateScale(activeButtonValue,scaleValue)
-      });    }
+        updateScale(activeButtonValues,scaleValue)
+      });  
+    }    
   });
 });
