@@ -387,7 +387,6 @@ function setUpInitScene() {
   for (var i = 0; i < 12 * 4 * 4; i++) {
     vertices.push(pyramid[i]);
   }
-
   objects.push({
     "name": "pyramid",
     "offset": 0,
@@ -718,3 +717,5 @@ buttons.forEach(button => {
       });    }
   });
 });
+setup();
+setUpInitScene();
