@@ -1206,9 +1206,21 @@ async function importData() {
 }
 async function initModel(filename) {
   const modelJson = await loadFile(filename);
-  hollowModel = JSON.parse(modelJson);
-  const reset = document.getElementById("reset-button");
-  reset.click();
+  var parsedJson = JSON.parse(modelJson);
+  if (Array.isArray(parsedJson) && parsedJson[0].offset !== undefined) {
+    objects = parsedJson;
+    const reset = document.getElementById("reset-button");
+    reset.click();
+    setup();
+    for (let i = 0; i < 3; i++) {
+      console.log("masuk");
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+    }
+  } else {
+    hollowModel = parsedJson;
+    const reset = document.getElementById("reset-button");
+    reset.click();
+  }
 }
 
 const loadFile = async (filename) => {
