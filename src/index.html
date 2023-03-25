@@ -82,7 +82,7 @@
       <br>
       <div>
         <button id="reset-button"onclick="resetHandler()">Reset View</button>
-        <button onclick="">Help</button>
+        <button onclick="showhelp()">Help</button>
       </div>
     </div>
     <div id="pointToolContainer" class="toolContainer">
@@ -101,7 +101,31 @@
 
     </div>
   </div>
+  <div id="help">
+    <div id="helptext">
+      <h2>HELP</h2>
+      <h3>3D Objects</h3>
+      <p>&emsp;<b>Select Model</b> Choose a model to display.
+         Model : Pyramid, Cube, Prism.</p>
+      <p>&emsp;<b>Projection type</b> Choose a projection type to display the model.
+         Projection : Perspective, Orthographic, Oblique</p>
+      <h3>Object Setting</h3>
+      <p>Transform the model</p>
+      
+      <p>&emsp;<b>Scale</b> Enlarge or shrink the model</p>
+      <p>&emsp;<b>Translation</b> Move the model depending on the axis (x,y,z)</p>
+      <p>&emsp;<b>Rotation</b> Rotate the model depending on the axis (x,y,z)</p>
+      <h3>Camera Setting</h3>
+      <p>Transform the camera</p>
+      
+      <p>&emsp;<b>Angle</b> Rotate the camera</p>
+      
+      <p>&emsp;<b>Distance</b> Change the distance between the camera and the model</p>
+      <button class="center" onclick="hidehelp()">OK</button>
+    </div>
+  </div>
   <script src="main.js"></script>
+  <script src="help.js"></script>
 </body>
 
 </html>
