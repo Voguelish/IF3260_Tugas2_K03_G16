@@ -27,6 +27,14 @@
           <button value= "daffa" class="btn btn-default" id="shape-b"> B</button>
         </div>
         <br>
+        Select Model:
+        <select id="model" onchange="modelHandler()">
+          <option value="pyramid" selected="selected">Pyramid-Steven</option>
+          <option value="hollow-cube">Hollow Cube-Adzka</option>
+          <option value="object-daffa">Object-Daffa</option>
+        </select>
+        <br>
+        <br>
         Projection Type:
           <select id="projection" onchange="projectionHandler()">
             <option value="perspective" selected="selected">Perspective</option>
