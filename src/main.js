@@ -1165,7 +1165,7 @@ buttons.forEach(button => {
       });
       scaleInput.addEventListener('input', () => {
         const scaleValue= scaleInput.value;
-        const deltascale = scaleValue - dilate;
+        const deltascale = scaleValue / dilate;
         dilate = scaleValue;
         updateScale(activeButtonValue,deltascale);
       });
