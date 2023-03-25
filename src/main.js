@@ -382,6 +382,223 @@ var hollowCube = {
   ]
 };
 
+var prism = {
+  name: 'prism',
+  vertexPositions: [
+    // FRONT side
+    // left
+    -0.3, -0.3, 0.3,
+    -0.25, -0.25, 0.3,
+    0.0, 0.25, 0.3,
+    0.0, 0.3, 0.3,
+    // right
+    0.0, 0.3, 0.3,
+    0.0, 0.25, 0.3,
+    0.25, -0.25, 0.3,
+    0.3, -0.3, 0.3,
+    // bottom
+    -0.25, -0.25, 0.3,
+    -0.3, -0.3, 0.3,
+    0.3, -0.3, 0.3,
+    0.25, -0.25, 0.3,
+
+    // BACK side
+    // left
+    -0.3, -0.3, -0.3,
+    -0.25, -0.25, -0.3,
+    0.0, 0.25, -0.3,
+    0.0, 0.3, -0.3,
+    // right
+    0.0, 0.3, -0.3,
+    0.0, 0.25, -0.3,
+    0.25, -0.25, -0.3,
+    0.3, -0.3, -0.3,
+    // bottom
+    -0.25, -0.25, -0.3,
+    -0.3, -0.3, -0.3,
+    0.3, -0.3, -0.3,
+    0.25, -0.25, -0.3,
+
+    // LEFT side
+    // outer
+    0.0, 0.3, 0.3,
+    0.0, 0.3, -0.3,
+    -0.3, -0.3, -0.3,
+    -0.3, -0.3, 0.3,
+    // inner
+    0.0, 0.25, 0.3,
+    -0.25, -0.25, 0.3,
+    -0.25, -0.25, -0.3,
+    0.0, 0.25, -0.3,
+
+    // Right side
+    // outer
+    0.0, 0.3, 0.3,
+    0.3, -0.3, 0.3,
+    0.3, -0.3, -0.3,
+    0.0, 0.3,- 0.3,
+    // inner
+    0.0, 0.25, 0.3,
+    0.0, 0.25, -0.3,
+    0.25, -0.25, -0.3,
+    0.25, -0.25, 0.3,
+
+    // Bottom side
+    // outer
+    -0.3, -0.3, 0.3,
+    -0.3, -0.3, -0.3,
+    0.3, -0.3, -0.3,
+    0.3, -0.3, 0.3,
+    // inner
+    -0.25, -0.25, 0.3,
+    0.25, -0.25, 0.3,
+    0.25, -0.25, -0.3,
+    -0.25, -0.25, -0.3,
+  ],
+  vertexNormals: [
+    // FRONT side
+    // left
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    // right
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    // bottom
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+    0, 0, 1,
+
+    // BACK side
+    // left
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+    // right
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+    // bottom
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+    0, 0, -1,
+
+    // LEFT side
+    // outer
+    -0.36, 0.18, 0,
+    -0.36, 0.18, 0,
+    -0.36, 0.18, 0,
+    -0.36, 0.18, 0,
+    // inner
+    0.3, -0.15, 0,
+    0.3, -0.15, 0,
+    0.3, -0.15, 0,
+    0.3, -0.15, 0,
+
+    // Right side
+    // outer
+    0.36, 0.18, 0,
+    0.36, 0.18, 0,
+    0.36, 0.18, 0,
+    0.36, 0.18, 0,
+    // inner
+    -0.3, -0.15, 0,
+    -0.3, -0.15, 0,
+    -0.3, -0.15, 0,
+    -0.3, -0.15, 0,
+
+    // Bottom side
+    // outer
+    0, -1, 0,
+    0, -1, 0,
+    0, -1, 0,
+    0, -1, 0,
+    // inner
+    0, 1, 0,
+    0, 1, 0,
+    0, 1, 0,
+    0, 1, 0,
+  ],
+  vertexColors: [
+    // FRONT side
+    // left
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    // right
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    // bottom
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+
+    // BACK side
+    // left
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    // right
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    // bottom
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+    0.8, 0.3, 0.5,
+
+    // LEFT side
+    // outer
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    // inner
+    0.9, 0.9, 0.9,
+    0.9, 0.9, 0.9,
+    0.9, 0.9, 0.9,
+    0.9, 0.9, 0.9,
+
+    // Right side
+    // outer
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    // inner
+    0.8, 0.8, 0.8,
+    0.8, 0.8, 0.8,
+    0.8, 0.8, 0.8,
+    0.8, 0.8, 0.8,
+
+    // Bottom side
+    // outer
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    0.3, 0.5, 0.8,
+    // inner
+    0.7, 0.7, 0.7,
+    0.7, 0.7, 0.7,
+    0.7, 0.7, 0.7,
+    0.7, 0.7, 0.7,
+  ]
+};
+
 hollowModel = pyramid;
 //
 
@@ -686,7 +903,7 @@ function modelHandler() {
   } else if (modelName == "hollow-cube") {
     hollowModel = hollowCube;
   } else {
-    // TODO: Implement buat model daffa
+    hollowModel = prism;
   }
   console.log("model changed to " + modelName);
   setup();
@@ -727,11 +944,9 @@ function distanceHandler() {
 }
 
 function resetHandler() {
-  document.getElementById("model").value = "pyramid";
   document.getElementById("projection").value = "perspective";
   document.getElementById("distance").value = -1.3;
   document.getElementById("angle").value = 0;
-  modelHandler();
   projectionHandler();
   updateAngleY();
 }
@@ -995,14 +1210,9 @@ async function importData() {
 async function initModel(filename) {
   const modelJson = await loadFile(filename);
   console.log(modelJson);
-  objects = JSON.parse(modelJson);
+  hollowModel = JSON.parse(modelJson);
   const reset = document.getElementById("reset-button");
   reset.click();
-  setup();
-  for (let i = 0; i < 3; i++) {
-    console.log("masuk");
-    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
-  }
 }
 
 const loadFile = async (filename) => {
