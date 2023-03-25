@@ -15,7 +15,6 @@ function check(canvas) {
   for (let i = 0; i < gl.length; i++) {
     try {
       flag = canvas.getContext(gl[i]);
-      console.log(canvas.getContext(gl[i]));
     }
     catch (e) { }
     if (flag) {
@@ -683,16 +682,11 @@ function draw(proj_matrix, model_matrix, start, end) {
   gl.uniformMatrix4fv(_Pmatrix, false, proj_matrix);
   gl.uniformMatrix4fv(_Vmatrix, false, view_matrix);
   gl.uniformMatrix4fv(_Mmatrix, false, model_matrix);
-  console.log(_Mmatrix);
-  console.log(_Vmatrix);
-  console.log(_Pmatrix);
-
   let normalMatrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   gl.uniformMatrix4fv(_Nmatrix, false, normalMatrix);
 
   for (var i = start; i < end; i++) {
     gl.drawArrays(gl.TRIANGLE_FAN, i * 4, 4);
-    console.log("masuk gambar");
   }
 }
 
@@ -719,9 +713,6 @@ function setUpInitScene() {
     "projMatrix": proj_matrix,
     "modelMatrix": model_matrix
   });
-  console.log(objects[0].projMatrix.length);
-  console.log(objects[0].normals.length);
-  console.log(objects[0].modelMatrix.length);
 
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
@@ -909,7 +900,6 @@ function modelHandler() {
   } else {
     hollowModel = prism;
   }
-  console.log("model changed to " + modelName);
   setup();
   for (var i = 0; i < objects.length; i++) {
     draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
@@ -1044,7 +1034,6 @@ function updateTranslate(obj,axis, value){
       var model_matrix = translation(value, 0, 0);  
   }
   else{
-    console.log("masuk y");
       var model_matrix = translation(0, value, 0);
   }
 
@@ -1058,9 +1047,6 @@ function updateTranslate(obj,axis, value){
       }
   }
   for(var i = 0; i<objects.length; i++){
-    console.log(objects[i].offset);
-    console.log(objects[i].modelMatrix.length);
-    console.log(objects[i].projMatrix.length);
     setup();
       draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
   }
@@ -1138,10 +1124,8 @@ buttons.forEach(button => {
     });
     button.classList.add('active');
     const activeButtonValue = document.querySelector('#button-container button.active').value;
-    console.log(activeButtonValue);
     activeButtonValues = activeButtonValue;    
     if(activeButtonValues==="pyramid"){
-      console.log(activeButtonValues==="pyramid");
       const scaleInput = document.getElementById('scale');
       //translation
       const xTranslation= document.getElementById('translation-x');
@@ -1153,7 +1137,6 @@ buttons.forEach(button => {
       const rotZInput = document.getElementById('rotation-z');
       xTranslation.addEventListener('input',()=>{
         const xValue= xTranslation.value;
-        console.log(xValue);
         const deltatransx = xValue - transx;
         transx = xValue;
         updateTranslate(activeButtonValues,'x',deltatransx);
@@ -1167,7 +1150,6 @@ buttons.forEach(button => {
 
       zTranslation.addEventListener('input',()=>{
         const zValue= zTranslation.value;
-        console.log(zValue);
         const deltatransz = zValue - transz;
         transz = zValue;
         updateTranslate(activeButtonValues,'z',deltatransz);
@@ -1221,7 +1203,6 @@ async function importData() {
 }
 async function initModel(filename) {
   const modelJson = await loadFile(filename);
-  console.log(modelJson);
   hollowModel = JSON.parse(modelJson);
   const reset = document.getElementById("reset-button");
   reset.click();
