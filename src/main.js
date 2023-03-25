@@ -9,6 +9,7 @@ var dilate = 1;
 var transx = 0;
 var transy = 0;
 var transz = 0;
+
 function check(canvas) {
   let gl = ['experimental-webgl', 'webgl', 'moz-webgl'];
   let flag;
@@ -941,8 +942,18 @@ function resetHandler() {
   document.getElementById("projection").value = "perspective";
   document.getElementById("distance").value = -1.3;
   document.getElementById("angle").value = 0;
+  document.getElementById("translation-x").value=0;
+  document.getElementById("translation-y").value=0;
+  document.getElementById("translation-z").value=0;
+  document.getElementById("rotation-x").value=180;
+  document.getElementById("rotation-y").value=180;
+  document.getElementById("rotation-z").value=180;
+  document.getElementById("scale").value=1;
   projectionHandler();
   updateAngleY();
+  setup();
+  setUpInitScene();
+
 }
 
 function getCenterPoint(start, end, arr) {
@@ -1128,7 +1139,6 @@ buttons.forEach(button => {
     button.classList.add('active');
     const activeButtonValue = document.querySelector('#button-container button.active').value;
     activeButtonValues = activeButtonValue;    
-    if(activeButtonValues==="pyramid"){
       const scaleInput = document.getElementById('scale');
       //translation
       const xTranslation= document.getElementById('translation-x');
@@ -1182,7 +1192,6 @@ buttons.forEach(button => {
         anglez = rotzValue;
         updateRotation(activeButtonValue, 0, 0, deltarotz)
       })
-    }
   });
 });
 function save() {
@@ -1206,21 +1215,9 @@ async function importData() {
 }
 async function initModel(filename) {
   const modelJson = await loadFile(filename);
-  var parsedJson = JSON.parse(modelJson);
-  if (Array.isArray(parsedJson) && parsedJson[0].offset !== undefined) {
-    objects = parsedJson;
-    const reset = document.getElementById("reset-button");
-    reset.click();
-    setup();
-    for (let i = 0; i < 3; i++) {
-      console.log("masuk");
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
-    }
-  } else {
-    hollowModel = parsedJson;
-    const reset = document.getElementById("reset-button");
-    reset.click();
-  }
+  hollowModel = JSON.parse(modelJson);
+  const reset = document.getElementById("reset-button");
+  reset.click();
 }
 
 const loadFile = async (filename) => {
