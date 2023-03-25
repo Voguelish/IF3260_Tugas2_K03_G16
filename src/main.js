@@ -1033,8 +1033,11 @@ function updateTranslate(obj,axis, value){
   if(axis == 'x'){
       var model_matrix = translation(value, 0, 0);  
   }
-  else{
+  else if(axis == 'y'){
       var model_matrix = translation(0, value, 0);
+  }
+  else if (axis == 'z') {
+    var model_matrix = translation(0, 0, value);
   }
 
   let currentModelMatrix = objects[idx].modelMatrix;
