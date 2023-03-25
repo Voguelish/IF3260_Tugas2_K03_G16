@@ -9,7 +9,7 @@ var dilate = 1;
 var transx = 0;
 var transy = 0;
 var transz = 0;
-var boolshade = 0;
+var boolshade = 1;
 
 function check(canvas) {
   let gl = ['experimental-webgl', 'webgl', 'moz-webgl'];
@@ -123,27 +123,27 @@ var pyramid = {
     -0.2, -0.2, -0.2, 0.2, -0.2, -0.2, 0.2, -0.2, -0.18, -0.2, -0.2, -0.18,
 
     //right face
-    0.18, -0.2, 0.2, 
-    0.2, -0.2, 0.2, 
-    0.02, 0.2, 0.02, 
+    0.18, -0.2, 0.2,
+    0.2, -0.2, 0.2,
+    0.02, 0.2, 0.02,
     0, 0.2, 0.02,
     0.18, -0.2, -0.2, 0.2, -0.2, -0.2, 0.02, 0.2, 0.02, 0, 0.2, 0.02,
     0.18, -0.2, 0.2, 0.2, -0.2, 0.2, 0.2, -0.2, -0.2, 0.18, -0.2, -0.2,
 
     //front face
     -0.2, -0.2, 0.2, 0.2, -0.2, 0.2, 0.18, -0.18, 0.18, -0.18, -0.18, 0.18,
-    -0.2, -0.2, 0.2, 
-    -0.18, -0.2, 0.2, 
-    0.02, 0.2, 0.02, 
+    -0.2, -0.2, 0.2,
+    -0.18, -0.2, 0.2,
+    0.02, 0.2, 0.02,
     0, 0.2, 0.02,
     0.18, -0.2, 0.2, 0.2, -0.2, 0.2, 0.02, 0.2, 0.02, 0, 0.2, 0.02,
 
     // //left face
-    -0.2, -0.2, 0.2, 
-    -0.18, -0.2, 0.2, 
-    0.02, 0.2, 0.02, 
+    -0.2, -0.2, 0.2,
+    -0.18, -0.2, 0.2,
+    0.02, 0.2, 0.02,
     0, 0.2, 0.02,
-    
+
     -0.2, -0.2, -0.2, -0.18, -0.2, -0.2, 0.02, 0.2, 0.02, 0, 0.2, 0.02,
     -0.2, -0.2, 0.2, -0.18, -0.2, 0.2, -0.18, -0.2, -0.2, -0.2, -0.2, -0.2,
 
@@ -441,7 +441,7 @@ var prism = {
     0.0, 0.3, 0.3,
     0.3, -0.3, 0.3,
     0.3, -0.3, -0.3,
-    0.0, 0.3,- 0.3,
+    0.0, 0.3, - 0.3,
     // inner
     0.0, 0.25, 0.3,
     0.0, 0.25, -0.3,
@@ -664,14 +664,14 @@ function setup() {
 document.getElementById("shading").addEventListener("change", () => {
   if (boolshade == 0) {
     boolshade = 1;
-    for(var i = 0; i<objects.length; i++){
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
-  }
+    for (var i = 0; i < objects.length; i++) {
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+    }
   } else {
     boolshade = 0
-    for(var i = 0; i<objects.length; i++){
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
-  }
+    for (var i = 0; i < objects.length; i++) {
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+    }
   }
 })
 
@@ -683,7 +683,7 @@ function draw(proj_matrix, model_matrix, start, end) {
   const fov = 75 * Math.PI / 180;
   const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
   const near = 0.1;
-  const far = 10;
+  const far = 30;
 
   const projectionType = document.getElementById('projection').value;
 
@@ -700,7 +700,7 @@ function draw(proj_matrix, model_matrix, start, end) {
   gl.uniformMatrix4fv(_Vmatrix, false, view_matrix);
   gl.uniformMatrix4fv(_Mmatrix, false, model_matrix);
   let normalMatrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  if  (boolshade == 1) {
+  if (boolshade == 1) {
     normalMatrix = invert(multiply(view_matrix, model_matrix));
     transpose(normalMatrix, normalMatrix);
   }
@@ -817,7 +817,7 @@ const invert = (matin) => {
   let b09 = a21 * a32 - a22 * a31;
   let b10 = a21 * a33 - a23 * a31;
   let b11 = a22 * a33 - a23 * a32;
-  
+
   let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 
   if (!det) {
@@ -842,7 +842,7 @@ const invert = (matin) => {
   matout[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
   matout[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
   matout[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
-  
+
   return matout;
 };
 
@@ -1033,17 +1033,9 @@ function resetHandler() {
   document.getElementById("projection").value = "perspective";
   document.getElementById("distance").value = -1.3;
   document.getElementById("angle").value = 0;
-  document.getElementById("translation-x").value=0;
-  document.getElementById("translation-y").value=0;
-  document.getElementById("translation-z").value=0;
-  document.getElementById("rotation-x").value=180;
-  document.getElementById("rotation-y").value=180;
-  document.getElementById("rotation-z").value=180;
-  document.getElementById("scale").value=1;
+
   projectionHandler();
   updateAngleY();
-  setup();
-  setUpInitScene();
 
 }
 
@@ -1083,28 +1075,28 @@ function scale(sx, sy, sz) {
 }
 function rotateX(rad) {
   return [
-      1, 0, 0, 0,
-      0, Math.cos(rad), -Math.sin(rad), 0,
-      0, Math.sin(rad), Math.cos(rad), 0,
-      0, 0, 0, 1
+    1, 0, 0, 0,
+    0, Math.cos(rad), -Math.sin(rad), 0,
+    0, Math.sin(rad), Math.cos(rad), 0,
+    0, 0, 0, 1
   ];
 }
 
 function rotateY(rad) {
   return [
-      Math.cos(rad), 0, Math.sin(rad), 0,
-      0, 1, 0, 0,
-      -Math.sin(rad), 0, Math.cos(rad), 0,
-      0, 0, 0, 1
+    Math.cos(rad), 0, Math.sin(rad), 0,
+    0, 1, 0, 0,
+    -Math.sin(rad), 0, Math.cos(rad), 0,
+    0, 0, 0, 1
   ]
 }
 
 function rotateZ(rad) {
   return [
-      Math.cos(rad), -Math.sin(rad), 0, 0,
-      Math.sin(rad), Math.cos(rad), 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
+    Math.cos(rad), -Math.sin(rad), 0, 0,
+    Math.sin(rad), Math.cos(rad), 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
   ]
 }
 
@@ -1124,19 +1116,19 @@ function rotationMatrix(x, y, z) {
   // 
   return multiply(matx, multiply(maty, matz));
 }
-function updateTranslate(obj,axis, value){
-  var idx=0;
-  for (var i = 0; i <objects.length; i++){
-    if(objects[i].name == obj){
-        idx = i;
-        break;
+function updateTranslate(obj, axis, value) {
+  var idx = 0;
+  for (var i = 0; i < objects.length; i++) {
+    if (objects[i].name == obj) {
+      idx = i;
+      break;
     }
   }
-  if(axis == 'x'){
-      var model_matrix = translation(value, 0, 0);  
+  if (axis == 'x') {
+    var model_matrix = translation(value, 0, 0);
   }
-  else if(axis == 'y'){
-      var model_matrix = translation(0, value, 0);
+  else if (axis == 'y') {
+    var model_matrix = translation(0, value, 0);
   }
   else if (axis == 'z') {
     var model_matrix = translation(0, 0, value);
@@ -1144,27 +1136,27 @@ function updateTranslate(obj,axis, value){
 
   let currentModelMatrix = objects[idx].modelMatrix;
   for (var i = 0; i < 4; i++) {
-      for (var j = 0; j < 4; j++) {
-          let sum = 0;
-          for (var k = 0; k < 4; k++)
-              sum = sum + currentModelMatrix[i * 4 + k] * model_matrix[k * 4 + j];
-              objects[idx].modelMatrix[i * 4 + j] = sum;
-      }
+    for (var j = 0; j < 4; j++) {
+      let sum = 0;
+      for (var k = 0; k < 4; k++)
+        sum = sum + currentModelMatrix[i * 4 + k] * model_matrix[k * 4 + j];
+      objects[idx].modelMatrix[i * 4 + j] = sum;
+    }
   }
-  for(var i = 0; i<objects.length; i++){
+  for (var i = 0; i < objects.length; i++) {
     setup();
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
 }
 function updateRotation(obj, x, y, z) {
-  var idx=0;
-  for (var i = 0; i <objects.length; i++){
-    if(objects[i].name == obj){
-        idx = i;
-        break;
+  var idx = 0;
+  for (var i = 0; i < objects.length; i++) {
+    if (objects[i].name == obj) {
+      idx = i;
+      break;
     }
   }
-  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  let centerPoint = getCenterPoint(objects[idx].offset * 12, objects[idx].offset * 12 + objects[idx].numVertices * 3, vertices);
   var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
   var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
   var rotation_matrix = rotationMatrix(x, y, z);
@@ -1172,16 +1164,16 @@ function updateRotation(obj, x, y, z) {
   var trans = multiply(translate_matrix1, multiply(rotation_matrix, translate_matrix2));
   objects[idx].modelMatrix = multiply(trans, objects[idx].modelMatrix)
 
-  for(var i = 0; i<objects.length; i++){
-    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  for (var i = 0; i < objects.length; i++) {
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
 }
-function updateScale(obj,value){
-  var idx=0;
-  for (var i = 0; i <objects.length; i++){
-    if(objects[i].name == obj){
-        idx = i;
-        break;
+function updateScale(obj, value) {
+  var idx = 0;
+  for (var i = 0; i < objects.length; i++) {
+    if (objects[i].name == obj) {
+      idx = i;
+      break;
     }
   }
   let centerPoint = getCenterPoint(objects[idx].offset * 12, objects[idx].offset * 12 + objects[idx].numVertices * 3, vertices);
@@ -1215,76 +1207,65 @@ function updateScale(obj,value){
       objects[idx].modelMatrix[i * 4 + j] = sum3;
     }
   }
-  for(var i = 0; i<objects.length; i++){
-      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  for (var i = 0; i < objects.length; i++) {
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
   }
 }
 
-const buttons = document.querySelectorAll('#button-container button');
-let activeButtonValues = "";
-buttons.forEach(button => {
-  button.addEventListener('click', () => {
-    buttons.forEach(otherButton => {
-      otherButton.classList.remove('active');
-    });
-    button.classList.add('active');
-    const activeButtonValue = document.querySelector('#button-container button.active').value;
-    activeButtonValues = activeButtonValue;    
-      const scaleInput = document.getElementById('scale');
-      //translation
-      const xTranslation= document.getElementById('translation-x');
-      const yTranslation= document.getElementById('translation-y');
-      const zTranslation= document.getElementById('translation-z');
-      //rotation
-      const rotXInput = document.getElementById('rotation-x');
-      const rotYInput = document.getElementById('rotation-y');
-      const rotZInput = document.getElementById('rotation-z');
-      xTranslation.addEventListener('input',()=>{
-        const xValue= xTranslation.value;
-        const deltatransx = xValue - transx;
-        transx = xValue;
-        updateTranslate(activeButtonValues,'x',deltatransx);
-      });
-      yTranslation.addEventListener('input',()=>{
-        const yValue= yTranslation.value;
-        const deltatransy = yValue - transy;
-        transy = yValue;
-        updateTranslate(activeButtonValues,'y',deltatransy);
-      });
-
-      zTranslation.addEventListener('input',()=>{
-        const zValue= zTranslation.value;
-        const deltatransz = zValue - transz;
-        transz = zValue;
-        updateTranslate(activeButtonValues,'z',deltatransz);
-
-      });
-      scaleInput.addEventListener('input', () => {
-        const scaleValue= scaleInput.value;
-        const deltascale = scaleValue / dilate;
-        dilate = scaleValue;
-        updateScale(activeButtonValue,deltascale);
-      });
-      rotXInput.addEventListener('input', () => {
-        const rotxValue = rotXInput.value;
-        const deltarotx =  rotxValue - anglex;
-        anglex = rotxValue;
-        updateRotation(activeButtonValue, deltarotx, 0, 0)
-      })
-      rotYInput.addEventListener('input', () => {
-        const rotyValue = rotYInput.value;
-        const deltaroty =  rotyValue - angley;
-        angley = rotyValue;
-        updateRotation(activeButtonValue, 0, deltaroty, 0)
-      })
-      rotZInput.addEventListener('input', () => {
-        const rotzValue = rotZInput.value;
-        const deltarotz =  rotzValue - anglez;
-        anglez = rotzValue;
-        updateRotation(activeButtonValue, 0, 0, deltarotz)
-      })
-  });
+const scaleInput = document.getElementById('scale');
+//translation
+const xTranslation = document.getElementById('translation-x');
+const yTranslation = document.getElementById('translation-y');
+const zTranslation = document.getElementById('translation-z');
+//rotation
+const rotXInput = document.getElementById('rotation-x');
+const rotYInput = document.getElementById('rotation-y');
+const rotZInput = document.getElementById('rotation-z');
+xTranslation.addEventListener('input', () => {
+  const xValue = xTranslation.value;
+  const deltatransx = xValue - transx;
+  transx = xValue;
+  updateTranslate("object", 'x', deltatransx);
 });
+yTranslation.addEventListener('input', () => {
+  const yValue = yTranslation.value;
+  const deltatransy = yValue - transy;
+  transy = yValue;
+  updateTranslate("object", 'y', deltatransy);
+});
+
+zTranslation.addEventListener('input', () => {
+  const zValue = zTranslation.value;
+  const deltatransz = zValue - transz;
+  transz = zValue;
+  updateTranslate("object", 'z', deltatransz);
+
+});
+scaleInput.addEventListener('input', () => {
+  const scaleValue = scaleInput.value;
+  const deltascale = scaleValue / dilate;
+  dilate = scaleValue;
+  updateScale("object", deltascale);
+});
+rotXInput.addEventListener('input', () => {
+  const rotxValue = rotXInput.value;
+  const deltarotx = rotxValue - anglex;
+  anglex = rotxValue;
+  updateRotation("object", deltarotx, 0, 0)
+})
+rotYInput.addEventListener('input', () => {
+  const rotyValue = rotYInput.value;
+  const deltaroty = rotyValue - angley;
+  angley = rotyValue;
+  updateRotation("object", 0, deltaroty, 0)
+})
+rotZInput.addEventListener('input', () => {
+  const rotzValue = rotZInput.value;
+  const deltarotz = rotzValue - anglez;
+  anglez = rotzValue;
+  updateRotation("object", 0, 0, deltarotz)
+})
+
 function save() {
   const object = JSON.stringify(objects, null, 4);
   const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(object)}`;
@@ -1297,7 +1278,7 @@ function save() {
 }
 const fileUpload = document.getElementById("load");
 fileUpload.addEventListener("change", importData);
-  
+
 async function importData() {
   if (fileUpload.value !== "") {
     const path = (window.URL || window.webkitURL).createObjectURL(fileUpload.files[0]);
@@ -1306,9 +1287,20 @@ async function importData() {
 }
 async function initModel(filename) {
   const modelJson = await loadFile(filename);
-  hollowModel = JSON.parse(modelJson);
-  const reset = document.getElementById("reset-button");
-  reset.click();
+  var parsedJson = JSON.parse(modelJson);
+  if (Array.isArray(parsedJson) && parsedJson[0].offset !== undefined) {
+    objects = parsedJson;
+    const reset = document.getElementById("reset-button");
+    reset.click();
+    setup();
+    for (let i = 0; i < objects.length; i++) {
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+    }
+  } else {
+    hollowModel = parsedJson;
+    const reset = document.getElementById("reset-button");
+    reset.click();
+  }
 }
 
 const loadFile = async (filename) => {

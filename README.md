@@ -1,8 +1,8 @@
 # IF3260_Tugas2_K03_G16
 
 ### Cara menjalankan program:
-- Pastikan WebGL tersedia pada browser
-- Jalankan file index.html pada folder src
+1. Pastikan WebGL tersedia pada browser
+2. Run file index.html yang ada di folder src
 
 ### Berikut merupakan deskripsi manual untuk melakukan fungsionalitas yang telah diimplementasikan:
 - Load file model atau hasil save: Klik tombol "Choose File" pada bagian "Load" untuk membuka file model yang sudah tersimpan dalam format JSON.
@@ -10,6 +10,7 @@
 - Mengubah jenis proyeksi: Pilih jenis proyeksi yang diinginkan dengan menggunakan menu drop-down "Projection Type".
 - Melakukan rotasi, translasi dan scaling dari objek: Gunakan slider "Scale", "Transition x", "Transition y", "Transition z", "Rotation x", "Rotation y", dan "Rotation z" pada menu control bagian "Object Setting" untuk melakukan rotasi, translasi dan scaling dari objek yang dipilih.
 - Mengubah jarak kamera view: Gunakan slider "Angle" pada menu control bagian "Camera Setting" untuk menggerakan kamera mengitari scene, dan gunakan slider "Distance" untuk mengubah jarak dari kamera.
+- ON/OFF shading: Ceklis checkbox "Shading" untuk menyalakan atau mematikan shading directional light pada objek.
 - Me-reset ke default view: Tekan tombol "Reset View" untuk me-reset posisi objek dan kamera ke default view.
 - Menu help: Tekan tombol "Help" untuk menampilkan penjelasan cara menggunakan aplikasi.
 - Melakukan save setting model dan camera: Tekan tombol "Save", kemudian file akan tersimpan dengan nama "model.json" yang dapat di-load kembali pada program.

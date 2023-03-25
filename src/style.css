@@ -29,8 +29,8 @@
   margin: 1em;
 }
 
-.button-container{
-  display : flex;
+#button-container{
+  display : none;
   justify-content: space-between;
 }
 .flex-col {
