@@ -392,9 +392,9 @@ function setUpInitScene() {
     "offset": 0,
     "end": 16,
     "numVertices": 64,
-    "vertices": vertices,
-    "color": colors,
-    "normals": vertexNormals,
+    "vertices": vertices.slice(0,64*3),
+    "color": colors.slice(0,64*3),
+    "normals": vertexNormals.slice(0,64*3),
     "projMatrix": proj_matrix,
     "modelMatrix": model_matrix
   });
@@ -652,6 +652,102 @@ function scale(sx, sy, sz) {
     0, 0, 0, 1,
   ];
 }
+function rotateX(rad) {
+  return [
+      1, 0, 0, 0,
+      0, Math.cos(rad), -Math.sin(rad), 0,
+      0, Math.sin(rad), Math.cos(rad), 0,
+      0, 0, 0, 1
+  ];
+}
+
+function rotateY(rad) {
+  return [
+      Math.cos(rad), 0, Math.sin(rad), 0,
+      0, 1, 0, 0,
+      -Math.sin(rad), 0, Math.cos(rad), 0,
+      0, 0, 0, 1
+  ]
+}
+
+function rotateZ(rad) {
+  return [
+      Math.cos(rad), -Math.sin(rad), 0, 0,
+      Math.sin(rad), Math.cos(rad), 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+  ]
+}
+
+function rotationMatrix(x, y, z) {
+  // x : deg, y : deg, z : deg
+
+  // get radian value
+  x *= Math.PI / 180;
+  y *= Math.PI / 180;
+  z *= Math.PI / 180;
+
+  // get rotation matrix
+  var matx = rotateX(x);
+  var maty = rotateY(y);
+  var matz = rotateZ(z);
+
+  // 
+  return multiply(matx, multiply(maty, matz));
+}
+function updateTranslate(obj,axis, value){
+  var idx=0;
+  for (var i = 0; i <objects.length; i++){
+    if(objects[i].name == obj){
+        idx = i;
+        break;
+    }
+  }
+  if(axis == 'x'){
+      var model_matrix = translation(value, 0, 0);  
+  }
+  else{
+    console.log("masuk y");
+      var model_matrix = translation(0, value, 0);
+  }
+
+  let currentModelMatrix = objects[idx].modelMatrix;
+  for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 4; j++) {
+          let sum = 0;
+          for (var k = 0; k < 4; k++)
+              sum = sum + currentModelMatrix[i * 4 + k] * model_matrix[k * 4 + j];
+              objects[idx].modelMatrix[i * 4 + j] = sum;
+      }
+  }
+  for(var i = 0; i<objects.length; i++){
+    console.log(objects[i].offset);
+    console.log(objects[i].modelMatrix.length);
+    console.log(objects[i].projMatrix.length);
+    setup();
+      draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  }
+}
+function updateRotation(obj, x, y, z) {
+  var idx=0;
+  for (var i = 0; i <objects.length; i++){
+    if(objects[i].name == obj){
+        idx = i;
+        break;
+    }
+  }
+  let centerPoint = getCenterPoint(objects[idx].offset*12, objects[idx].offset*12 + objects[idx].numVertices*3,vertices);
+  var translate_matrix1 = translation(-centerPoint[0], -centerPoint[1], 0);
+  var translate_matrix2 = translation(centerPoint[0], centerPoint[1], 0);
+  var rotation_matrix = rotationMatrix(x, y, z);
+
+  var trans = multiply(translate_matrix1, multiply(rotation_matrix, translate_matrix2));
+  objects[idx].modelMatrix = multiply(trans, objects[idx].modelMatrix)
+
+  for(var i = 0; i<objects.length; i++){
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);  
+  }
+}
 function updateScale(obj,value){
   var idx=0;
   for (var i = 0; i <objects.length; i++){
@@ -710,12 +806,93 @@ buttons.forEach(button => {
     if(activeButtonValues==="pyramid"){
       console.log(activeButtonValues==="pyramid");
       const scaleInput = document.getElementById('scale');
-      scaleInput.addEventListener('change', () => {
-        const scaleValue = scaleInput.value;
-        console.log(scaleValue);
+      //translation
+      const xTranslation= document.getElementById('translation-x');
+      const yTranslation= document.getElementById('translation-y');
+      const zTranslation= document.getElementById('translation-z');
+      //rotation
+      const rotXInput = document.getElementById('rotation-x');
+      const rotYInput = document.getElementById('rotation-y');
+      const rotZInput = document.getElementById('rotation-z');
+      xTranslation.addEventListener('input',()=>{
+        const xValue= xTranslation.value;
+        console.log(xValue);
+        updateTranslate(activeButtonValues,'x',xValue);
+      });
+      yTranslation.addEventListener('input',()=>{
+        const yValue= yTranslation.value;
+        updateTranslate(activeButtonValues,'y',yValue);
+      });
+
+      zTranslation.addEventListener('input',()=>{
+        const zValue= zTranslation.value;
+        console.log(zValue);
+        updateTranslate(activeButtonValues,'z',zValue);
+
+      });
+      scaleInput.addEventListener('input', () => {
+        const scaleValue= scaleInput.value;
         updateScale(activeButtonValue,scaleValue)
-      });    }
+      });
+      rotXInput.addEventListener('input', () => {
+        const rotxValue = rotXInput.value;
+        const deltarotx =  rotxValue - anglex;
+        anglex = rotxValue;
+        updateRotation(activeButtonValue, deltarotx, 0, 0)
+      })
+      rotYInput.addEventListener('input', () => {
+        const rotyValue = rotYInput.value;
+        const deltaroty =  rotyValue - angley;
+        angley = rotyValue;
+        updateRotation(activeButtonValue, 0, deltaroty, 0)
+      })
+      rotZInput.addEventListener('input', () => {
+        const rotzValue = rotZInput.value;
+        const deltarotz =  rotzValue - anglez;
+        anglez = rotzValue;
+        updateRotation(activeButtonValue, 0, 0, deltarotz)
+      })
+    }
   });
 });
+function save() {
+  const object = JSON.stringify(objects, null, 4);
+  const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(object)}`;
+  const downloadLink = document.createElement('a');
+  downloadLink.setAttribute('href', dataUri);
+  downloadLink.setAttribute('download', 'model.json');
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+const fileUpload = document.getElementById("load");
+fileUpload.addEventListener("change", importData);
+  
+async function importData() {
+  if (fileUpload.value !== "") {
+    const path = (window.URL || window.webkitURL).createObjectURL(fileUpload.files[0]);
+    await initModel(path);
+  }
+}
+async function initModel(filename) {
+  const modelJson = await loadFile(filename);
+  console.log(modelJson);
+  objects = JSON.parse(modelJson);
+  const reset = document.getElementById("reset-button");
+  reset.click();
+  setup();
+  for (let i = 0; i < 3; i++) {
+    console.log("masuk");
+    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
+  }
+}
+
+const loadFile = async (filename) => {
+  return await fetchFile(filename);
+};
+
+async function fetchFile(filename) {
+  return await fetch(filename).then((res) => res.text());
+};
 setup();
 setUpInitScene();
