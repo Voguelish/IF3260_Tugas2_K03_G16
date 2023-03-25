@@ -5,6 +5,10 @@ var objects = [];
 var anglex = 180;
 var angley = 180;
 var anglez = 180;
+var dilate = 1;
+var transx = 0;
+var transy = 0;
+var transz = 0;
 function check(canvas) {
   let gl = ['experimental-webgl', 'webgl', 'moz-webgl'];
   let flag;
@@ -1140,22 +1144,30 @@ buttons.forEach(button => {
       xTranslation.addEventListener('input',()=>{
         const xValue= xTranslation.value;
         console.log(xValue);
-        updateTranslate(activeButtonValues,'x',xValue);
+        const deltatransx = xValue - transx;
+        transx = xValue;
+        updateTranslate(activeButtonValues,'x',deltatransx);
       });
       yTranslation.addEventListener('input',()=>{
         const yValue= yTranslation.value;
-        updateTranslate(activeButtonValues,'y',yValue);
+        const deltatransy = yValue - transy;
+        transy = yValue;
+        updateTranslate(activeButtonValues,'y',deltatransy);
       });
 
       zTranslation.addEventListener('input',()=>{
         const zValue= zTranslation.value;
         console.log(zValue);
-        updateTranslate(activeButtonValues,'z',zValue);
+        const deltatransz = zValue - transz;
+        transz = zValue;
+        updateTranslate(activeButtonValues,'z',deltatransz);
 
       });
       scaleInput.addEventListener('input', () => {
         const scaleValue= scaleInput.value;
-        updateScale(activeButtonValue,scaleValue)
+        const deltascale = scaleValue - dilate;
+        dilate = scaleValue;
+        updateScale(activeButtonValue,deltascale);
       });
       rotXInput.addEventListener('input', () => {
         const rotxValue = rotXInput.value;
