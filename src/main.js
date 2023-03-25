@@ -939,6 +939,17 @@ function distanceHandler() {
 }
 
 function resetHandler() {
+  updateTranslate("object", 'x', -document.getElementById("translation-x").value);
+  updateTranslate("object", 'y', -document.getElementById("translation-y").value);
+  updateTranslate("object", 'z', -document.getElementById("translation-z").value);
+  transx = 0;
+  transy = 0;
+  transz = 0;
+
+  document.getElementById("translation-x").value = 0;
+  document.getElementById("translation-y").value = 0;
+  document.getElementById("translation-z").value = 0;
+
   document.getElementById("projection").value = "perspective";
   document.getElementById("distance").value = -1.3;
   document.getElementById("angle").value = 0;
