@@ -934,11 +934,9 @@ function distanceHandler() {
 }
 
 function resetHandler() {
-  document.getElementById("model").value = "pyramid";
   document.getElementById("projection").value = "perspective";
   document.getElementById("distance").value = -1.3;
   document.getElementById("angle").value = 0;
-  modelHandler();
   projectionHandler();
   updateAngleY();
 }
@@ -1202,14 +1200,9 @@ async function importData() {
 async function initModel(filename) {
   const modelJson = await loadFile(filename);
   console.log(modelJson);
-  objects = JSON.parse(modelJson);
+  hollowModel = JSON.parse(modelJson);
   const reset = document.getElementById("reset-button");
   reset.click();
-  setup();
-  for (let i = 0; i < 3; i++) {
-    console.log("masuk");
-    draw(objects[i].projMatrix, objects[i].modelMatrix, objects[i].offset, objects[i].end);
-  }
 }
 
 const loadFile = async (filename) => {
